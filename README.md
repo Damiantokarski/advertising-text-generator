@@ -6,8 +6,7 @@
 
 - **Frontend:** React + Vite + TailwindCSS
 - **Backend:** Express + TypeScript + Prisma
-- **API/Integracje:** Figma REST API
-- **Dev Tools:** tsx, concurrently, yup, nodemon, eslint, prettier
+- **Dev Tools:** tsx, concurrently, yup, nodemon, eslint
 
 ## How to run locally
 
