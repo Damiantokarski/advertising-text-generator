@@ -1,6 +1,4 @@
-# tools-animate-asset-toolkit
-
-**Asset Wizard for Adobe Animate** - React + Node.js application for generating text for banners and SVG/PNG graphics with support for Figma API, export to Animate and HTML conversion.
+# advertising-text-generator
 
 ## Technology stack
 
