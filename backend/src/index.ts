@@ -1,8 +1,12 @@
 import express from "express";
 
+import loginRoutes from "./routes/login";
+
 const server = express();
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
+
+server.use("/api/login", loginRoutes);
 
 const PORT = process.env.BACKEND_PORT || 4000;
 
