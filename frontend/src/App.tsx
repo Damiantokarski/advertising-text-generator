@@ -1,10 +1,10 @@
-import './App.css'
+import "./App.css";
 
-function App() {
+import { Dropzone } from "./app/Ui/Dropzone";
 
-  return (
-    <div>Hello World!</div>
-  )
+export default function App() {
+	const handleDropZone = (files: File[]) => {
+		console.log(files);
+	};
+	return <Dropzone onFiles={handleDropZone} />;
 }
-
-export default App

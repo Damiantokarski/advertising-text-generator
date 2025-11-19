@@ -1,4 +1,4 @@
-import React, { JSX, memo } from "react";
+import React, { type JSX, memo } from "react";
 import {
   PiTextAlignLeft,
   PiTextAlignRight,
