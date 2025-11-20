@@ -1,5 +1,5 @@
 import { useDropzone } from "../hooks/useDropzone";
-import { Icon, IconType } from "./Icon";
+import { Icon } from "./Icon";
 
 export interface DropzoneProps {
 	onFiles: (files: File[]) => void;
@@ -63,7 +63,7 @@ export const Dropzone = ({
 				onPaste={onPaste}
 			>
 				<Icon
-					type={IconType.CloudArrowDown}
+					type="cloudArrowDown"
 					className="text-4xl text-primary-blue-sky "
 				/>
 				<p>Drag & drop or select files</p>
