@@ -1,10 +1,11 @@
 import "./App.css";
+import { Projects } from "./app/view/dashboard/projects/Projects";
 
-import { Dropzone } from "./app/Ui/Dropzone";
 
 export default function App() {
-	const handleDropZone = (files: File[]) => {
-		console.log(files);
-	};
-	return <Dropzone onFiles={handleDropZone} />;
+	return (
+		<main className="relative flex flex-col h-screen min-w-full">
+			<Projects />
+		</main>
+	);
 }

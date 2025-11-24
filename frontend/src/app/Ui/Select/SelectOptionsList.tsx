@@ -2,40 +2,31 @@ import List from "../List/List";
 import ListItem from "../List/ListItem";
 import { SelectOption } from "./SelectOption";
 
-interface SelectOptionListProps<T> {
-	options: T[];
-	selected?: T;
-	onSelect: (option: T) => void;
-	getOptionLabel: (option: T) => string;
-	getOptionValue: (option: T) => string | number;
+
+interface SelectOptionListProps {
+	options: string[];
+	selected?: string;
+	onSelect: (option: string) => void;
 }
 
-export function SelectOptionList<T>({
+export const SelectOptionList = ({
 	options,
 	selected,
 	onSelect,
-	getOptionLabel,
-	getOptionValue,
-}: SelectOptionListProps<T>) {
+}: SelectOptionListProps) => {
 	return (
-		<div className="px-4 py-4 bg-surface shadow rounded-lg z-1000 fixed right-80 -mt-7 text-tiny max-w-48 space-y-1 border-2 border-primary-blue-sky">
+		<div className="absolute left-0 mt-1 w-full bg-surface shadow rounded-sm z-50 text-tiny max-h-64 border border-primary-blue-sky">
 			<List className="w-full max-h-64 overflow-auto hidden-scrollbar flex flex-col items-start">
 				{options.map((option) => (
-					<ListItem key={getOptionValue(option)}>
+					<ListItem key={option} className="w-full">
 						<SelectOption
-							isSelected={
-								!!(
-									selected &&
-									getOptionValue(option) === getOptionValue(selected)
-								)
-							}
 							onClick={() => onSelect(option)}
-							label={getOptionLabel(option)}
-							value={getOptionValue(option)}
+							isSelected={option === selected}
+							value={option}
 						/>
 					</ListItem>
 				))}
 			</List>
 		</div>
 	);
-}
+};

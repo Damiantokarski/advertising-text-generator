@@ -1,31 +1,39 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import { SelectButton } from "./SelectButton";
 import { SelectOptionList } from "./SelectOptionsList";
+import { InputLabel } from "../Input/InputLabel";
 
-interface SelectProps<T> {
-	optionsList: T[];
-	selected?: T;
+
+interface SelectProps {
+	optionsList: string[];
+	defaultValue?: string;
 	placeholder?: string;
 	disabled?: boolean;
 	className?: string;
-	onChange: (option: T) => void;
-	getOptionLabel: (option: T) => string;
-	getOptionValue: (option: T) => string | number;
+	label?: string;
+	onChange?: (option: string) => void;
+	error?: string;
 }
 
-export function Select<T>({
+export const Select = ({
 	optionsList,
-	selected,
+	defaultValue,
 	onChange,
-	getOptionLabel,
-	getOptionValue,
 	placeholder = "Wybierz…",
 	disabled = false,
-	className,
-}: SelectProps<T>) {
+	label,
+	className = "",
+	error,
+}: SelectProps) => {
 	const [isOpen, setIsOpen] = useState(false);
+	const [selected, setSelected] = useState<string | undefined>(defaultValue);
+
 	const ref = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		setSelected(defaultValue);
+	}, [defaultValue]);
 
 	const toggleDropdown = () => {
 		if (!disabled) setIsOpen((prev) => !prev);
@@ -37,28 +45,31 @@ export function Select<T>({
 
 	useClickOutside(ref, closeDropdown);
 
+	const handleSelect = (option: string) => {
+		setSelected(option);
+		onChange?.(option);
+		closeDropdown();
+	};
+
 	return (
 		<div ref={ref} className={`relative w-full ${className}`}>
+				{label && <InputLabel>{label}</InputLabel>}
 			<SelectButton
 				onClick={toggleDropdown}
-				selected={selected}
-				getOptionLabel={getOptionLabel}
+				value={selected}
 				placeholder={placeholder}
 				disabled={disabled}
 			/>
+
+			{error && <p className="text-red-500 text-tiny mt-1">{error}</p>}
 
 			{shouldShowOptions && (
 				<SelectOptionList
 					options={optionsList}
 					selected={selected}
-					onSelect={(option) => {
-						onChange(option);
-						closeDropdown();
-					}}
-					getOptionLabel={getOptionLabel}
-					getOptionValue={getOptionValue}
+					onSelect={handleSelect}
 				/>
 			)}
 		</div>
 	);
-}
+};
