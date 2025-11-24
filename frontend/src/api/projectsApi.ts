@@ -1,9 +1,8 @@
 export interface CreateProjectPayload {
-	projectName: string;
-	jobNumber: string;
-	taskTitle: string;
-	status: string;
-	projectId: string;
+	name: string;
+	task: string;
+	title: string;
+	priority: string;
 }
 
 export const createProjectApi = async (data: CreateProjectPayload) => {
@@ -14,6 +13,7 @@ export const createProjectApi = async (data: CreateProjectPayload) => {
 		},
 		body: JSON.stringify(data),
 	});
+	console.log(res)
 	if (!res.ok) throw new Error(`Failed to create Project: ${res.statusText}`);
 	return res.json();
 };

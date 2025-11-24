@@ -2,12 +2,16 @@ import express from "express";
 
 import loginRoutes from "./routes/login";
 import projectRoutes from "./routes/projects";
+import cors from "cors";
 
 const server = express();
+server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
 server.use("/api/login", loginRoutes);
+
+server.use("/api/projects", projectRoutes);
 
 const PORT = process.env.BACKEND_PORT || 4000;
 
@@ -18,8 +22,6 @@ server.get("/", (_req, res) => {
 		time: new Date().toISOString(),
 	});
 });
-
-server.use("/api/projects", projectRoutes);
 
 server.use(
 	(
@@ -33,7 +35,9 @@ server.use(
 			res.status(500).json({
 				error: "Internal Server Error",
 				message:
-					process.env.NODE_ENV === "production" ? "Something went wrong" : err.message,
+					process.env.NODE_ENV === "production"
+						? "Something went wrong"
+						: err.message,
 			});
 		}
 	}
