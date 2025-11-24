@@ -1,7 +1,22 @@
 import express from "express";
-import { getProjectsService } from "../modules/project/service";
+import { createProjectService, getProjectsService } from "../modules/project/service";
+import { HttpError } from "../lib/errors";
 
 const router = express.Router();
+
+router.post("/create", async (req, res) => {
+	try {
+		const project = await createProjectService(req.body);
+		res.status(201).json(project);
+	} catch (e: any) {
+		if (e instanceof HttpError) {
+			return res
+				.status(e.status)
+				.json({ error: e.message, code: e.code, field: e.field });
+		}
+		res.status(500).json({ error: "Something went wrong while creating the project" });
+	}
+});
 
 router.get("/", async (req, res) => {
 	try {
@@ -43,7 +58,7 @@ router.get("/", async (req, res) => {
 	} catch (e: any) {
 		console.error("GET /api/projects error:", e);
 		res.status(500).json({
-			error: "Nie udało się pobrać projektów",
+			error: "Failed to fetch projects",
 			message: e?.message ?? String(e),
 		});
 	}

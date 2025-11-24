@@ -1,3 +1,4 @@
+import { HttpError } from "../../lib/errors";
 import { prisma } from "../../lib/prisma";
 
 export const getProjectsService = async (
@@ -39,4 +40,29 @@ export const getProjectsService = async (
 		pageSize: take,
 		totalPages,
 	};
+};
+
+export const createProjectService = async (data: any) => {
+	const existingProject = await prisma.project.findFirst({
+		where: { job: data.jobNumber },
+	});
+
+	if (existingProject) {
+		throw new HttpError(
+			"Project with this job number already exists",
+			409,
+			"DUPLICATE_JOB",
+			"jobNumber"
+		);
+	}
+
+	return prisma.project.create({
+		data: {
+			projectId: data.projectId,
+			name: data.projectName,
+			job: data.jobNumber,
+			title: data.taskTitle,
+			status: data.status,
+		},
+	});
 };

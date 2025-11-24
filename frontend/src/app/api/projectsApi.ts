@@ -1,9 +1,35 @@
-export const getProjectsApi = async (page = 1, pageSize = 10, q?: string) => {
-	const params = new URLSearchParams();
-	params.set("page", String(page));
-	params.set("pageSize", String(pageSize));
+export interface CreateProjectPayload {
+	projectName: string;
+	jobNumber: string;
+	taskTitle: string;
+	status: string;
+	projectId: string;
+}
 
-	if (q) params.set("q", q);
+export const createProjectApi = async (data: CreateProjectPayload) => {
+	const res = await fetch(`http://localhost:4000/api/projects/create`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	});
+	if (!res.ok) throw new Error(`Failed to create Project: ${res.statusText}`);
+	return res.json();
+};
+
+export interface GetProjectsPayload {
+	page: number;
+	pageSize: number;
+	q?: string;
+}
+
+export const getProjectsApi = async (data: GetProjectsPayload) => {
+	const params = new URLSearchParams();
+	params.set("page", String(data.page));
+	params.set("pageSize", String(data.pageSize));
+
+	if (data.q) params.set("q", data.q);
 
 	const res = await fetch(
 		`http://localhost:4000/api/projects?${params.toString()}`
