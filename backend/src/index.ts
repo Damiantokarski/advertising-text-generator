@@ -11,6 +11,7 @@ import projectRoutes from "./routes/projects";
 import fontsRoutes from "./routes/google-fonts";
 import authRoutes from "./routes/auth";
 import { requireAccessToken } from "./middleware/auth";
+import compress from "./routes/compress";
 
 const allowedOrigins = [
 	process.env.FRONTEND_URL,
@@ -31,15 +32,15 @@ const corsOptions: CorsOptions = {
 	allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-const server = express();
-server.use(cors(corsOptions));
-server.options("*", cors(corsOptions));
-server.use(cookieParser());
-
 const upload = multer({
 	storage: multer.memoryStorage(),
 	limits: { fileSize: 25 * 1024 * 1024, files: 50 },
 });
+
+const server = express();
+server.use(cors(corsOptions));
+server.options("*", cors(corsOptions));
+server.use(cookieParser());
 
 server.use(express.json());
 
@@ -49,6 +50,8 @@ server.use("/api/projects", requireAccessToken, projectRoutes);
 server.use("/api/fonts", requireAccessToken, fontsRoutes);
 
 server.use("/api/auth", authRoutes);
+
+server.use("/api/compress-download", upload.any(), compress);
 
 const PORT = process.env.BACKEND_PORT || 4000;
 
