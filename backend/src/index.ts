@@ -2,7 +2,15 @@ import express from "express";
 
 import loginRoutes from "./routes/login";
 import projectRoutes from "./routes/projects";
+import compress from "./routes/compress";
+
 import cors from "cors";
+import multer from "multer";
+
+const upload = multer({
+	storage: multer.memoryStorage(),
+	limits: { fileSize: 25 * 1024 * 1024, files: 50 },
+});
 
 const server = express();
 server.use(cors());
@@ -12,6 +20,8 @@ server.use(express.urlencoded({ extended: true }));
 server.use("/api/login", loginRoutes);
 
 server.use("/api/projects", projectRoutes);
+
+server.use("/api/compress-download", upload.any(), compress);
 
 const PORT = process.env.BACKEND_PORT || 4000;
 

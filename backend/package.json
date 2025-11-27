@@ -7,15 +7,21 @@
 	},
 	"dependencies": {
 		"@prisma/client": "^6.19.0",
+		"archiver": "^7.0.1",
 		"cors": "^2.8.5",
 		"express": "^5.1.0",
+		"multer": "^1.4.5-lts.2",
 		"nodemon": "^3.1.10",
+		"sharp": "^0.34.2",
+		"svgo": "^4.0.0",
 		"uuid": "^13.0.0"
 	},
 	"devDependencies": {
+		"@types/archiver": "^6.0.3",
 		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.4",
 		"@types/node": "^24.9.1",
+		"@types/multer": "^1.4.12",
 		"prisma": "^6.19.0",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3"
