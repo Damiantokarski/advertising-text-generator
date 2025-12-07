@@ -38,3 +38,11 @@ export const getProjectsApi = async (data: GetProjectsPayload) => {
 	if (!res.ok) throw new Error(`Failed to fetch Projects: ${res.statusText}`);
 	return res.json();
 };
+
+export const getProjectApi = async (id: string) => {
+  const res = await fetch(
+    `http://localhost:4000/api/projects/${id}`
+  );
+  if (!res.ok) throw new Error(`Failed to fetch Projects: ${res.statusText}`);
+  return res.json();
+};

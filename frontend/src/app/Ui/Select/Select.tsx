@@ -14,6 +14,7 @@ interface SelectProps {
 	label?: string;
 	onChange?: (option: string) => void;
 	error?: string;
+	small?: boolean;
 }
 
 export const Select = ({
@@ -25,6 +26,7 @@ export const Select = ({
 	label,
 	className = "",
 	error,
+	small = false,
 }: SelectProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [selected, setSelected] = useState<string | undefined>(defaultValue);
@@ -59,6 +61,7 @@ export const Select = ({
 				value={selected}
 				placeholder={placeholder}
 				disabled={disabled}
+				small={small}
 			/>
 
 			{error && <p className="text-red-500 text-tiny mt-1">{error}</p>}

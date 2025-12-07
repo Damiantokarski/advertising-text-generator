@@ -93,3 +93,26 @@ export const createProjectService = async (data: {
 		return { status: false, message: "Failed to create project" };
 	}
 };
+
+export const getProject = async (projectId: string) => {
+	try {
+		const project = await prisma.project.findFirst({
+			where: { projectId },
+			include: {
+				texts: true,
+				banners: true,
+				projectSettings: true,
+			},
+		});
+		return {
+			project: {
+				id: project?.projectId,
+				...project,
+			},
+			status: true,
+			message: "Project fetched successfully",
+		};
+	} catch (error) {
+		return { project: null, status: false, message: "Failed to fetch project" };
+	}
+};

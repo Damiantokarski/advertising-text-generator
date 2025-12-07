@@ -1,10 +1,10 @@
 // store.ts
 import { configureStore } from "@reduxjs/toolkit";
-import viewportReducer from "./slices/viewportSlice";
+import generatorReducer from "./slices/generator";
 
 export const store = configureStore({
   reducer: {
-    viewPort: viewportReducer,
+    generator: generatorReducer,
   },
 });
 

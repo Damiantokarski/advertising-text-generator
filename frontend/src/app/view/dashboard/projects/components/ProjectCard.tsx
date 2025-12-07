@@ -17,9 +17,8 @@ interface ProjectCardProps {
 export const ProjectCard = ({ project }: ProjectCardProps) => {
 	const navigate = useNavigate();
 
-	const handleCurrentProject = () => {
-		navigate(`/text-generator/${project.projectId}`);
-	};
+	const handleCurrentProject = () =>
+		navigate(`/text-generator/project/${project.projectId}`);
 
 	return (
 		<article

@@ -2,6 +2,7 @@ import express from "express";
 
 import loginRoutes from "./routes/login";
 import projectRoutes from "./routes/projects";
+import fontsRoutes from "./routes/google-fonts";
 import cors from "cors";
 
 const server = express();
@@ -10,7 +11,7 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
 server.use("/api/login", loginRoutes);
-
+server.use("/api/google-fonts", fontsRoutes);
 server.use("/api/projects", projectRoutes);
 
 const PORT = process.env.BACKEND_PORT || 4000;
