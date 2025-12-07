@@ -42,11 +42,12 @@ export interface Text {
 
 export interface Template {
 	id: string;
-	name: string;
+	
 	type: string;
 	locked: boolean;
 	display: boolean;
 	value: {
+		name: string;
 		scale: number;
 		size: {
 			width: number;
@@ -196,7 +197,7 @@ const generator = createSlice({
 			if (type === "template") {
 				const idx = state.templates.findIndex((item) => item.id === id);
 				if (idx !== -1) {
-					state.templates[idx].name = name;
+					state.templates[idx].value.name = name;
 				}
 			} else {
 				const idx = state.texts.findIndex((item) => item.id === id);

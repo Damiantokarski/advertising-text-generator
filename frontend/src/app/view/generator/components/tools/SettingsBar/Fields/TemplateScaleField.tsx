@@ -32,7 +32,7 @@ export const TemplateScaleField = () => {
 	};
 
 	return (
-		<FieldWrapper title="Scale">
+		<FieldWrapper title="Scale" className="flex flex-col gap-4 items-center">
 			<Select
 				optionsList={optionsList}
 				defaultValue={selectedLabel}

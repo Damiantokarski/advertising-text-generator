@@ -1,8 +1,7 @@
 import { useRef, useState } from "react";
-
-import { TemplateList } from "./TemplateList";
-import { useClickOutside } from "../../../../../../hooks/useClickOutside";
 import { Icon } from "../../../../../../ui/Icon";
+import { useClickOutside } from "../../../../../../hooks/useClickOutside";
+import { NewTemplateForm } from "./NewTemplateForm";
 
 export const CreateNewTemplate = () => {
 	const ref = useRef<HTMLDivElement | null>(null);
@@ -19,7 +18,7 @@ export const CreateNewTemplate = () => {
 				<Icon type="rectangle" className="text-secondary-light" />
 			</button>
 
-			{isOpen && <TemplateList onChooseElement={showDropDown} />}
+			{isOpen && <NewTemplateForm onHideForm={showDropDown} />}
 		</div>
 	);
 };

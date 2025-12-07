@@ -10,6 +10,8 @@ import { AlignField } from "./Fields/AlignField";
 import { ColorField } from "./Fields/ColorField";
 import { TextField } from "./Fields/TextField";
 import { FontFields } from "./Fields/FontFields";
+import { TemplateSizeField } from "./Fields/TemplateSizeField";
+import { TemplateNameField } from "./Fields/TemplateNameField";
 
 export const SettingsBar = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +36,13 @@ export const SettingsBar = () => {
 			className={`fixed top-0 w-2xs bg-secondary-black shadow p-8 space-y-4 z-10 overflow-auto hidden-scrollbar transition-all bg-surface m-4 h-[calc(100vh-32px)] rounded-lg border-2 border-primary-blue-sky
          ${isOpen ? "right-0" : "-right-76"} `}
 		>
-			{isTemplate && <TemplateScaleField />}
+			{isTemplate && (
+				<>
+					<TemplateNameField />
+					<TemplateScaleField />
+					<TemplateSizeField />
+				</>
+			)}
 
 			{isText && (
 				<>
@@ -42,12 +50,11 @@ export const SettingsBar = () => {
 					<SizeField />
 					<PositionField />
 					<RotationField />
+					<FontFields />
 					<SpaceField />
 					<AlignField />
 					<ColorField />
-					<FontFields/>
-          {/* EXPORT */}
-         
+					{/* EXPORT */}
 				</>
 			)}
 		</section>

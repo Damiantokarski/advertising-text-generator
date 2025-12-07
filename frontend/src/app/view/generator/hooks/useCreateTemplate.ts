@@ -4,7 +4,8 @@ import Konva from "konva";
 
 import { v4 as uuidv4 } from "uuid";
 import { setNewTemplateObject } from "../../../store/slices/generator";
-import type { TemplateLayerData } from "../components/tools/NewTemplate/TemplateList";
+import type { TemplateLayerData } from "../components/tools/ActionBar/NewTemplate/NewTemplateForm";
+
 
 
 export function useCreateTemplate() {
@@ -33,6 +34,7 @@ export function useCreateTemplate() {
 				display: true,
 				value: {
 					scale: 1,
+					name: template.name,
 					position: { x: centerX, y: centerY },
 					size: { width: template.width, height: template.height },
 				},

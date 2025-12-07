@@ -26,6 +26,7 @@ function useActiveCanvas<
 	selectList: (state: RootState) => Item[],
 	updateAction: ActionCreatorWithPayload<{ id: string; value: Value }>
 ) {
+	
 	const dispatch = useDispatch();
 
 	const activeItem = useSelector((state: RootState) => {

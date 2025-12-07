@@ -60,19 +60,19 @@ export const RotationField = () => {
 			<div className="w-full flex gap-1 text-xs">
 				<button
 					onClick={onRightRotate}
-					className=" border border-primary-blue-sky w-full flex justify-center items-center rounded-tl rounded-bl cursor-pointer hover:bg-primary-blue-sky/20 transition-colors"
+					className=" border border-primary-blue w-full flex justify-center items-center rounded-tl rounded-bl cursor-pointer hover:bg-primary-blue-sky/20 transition-colors"
 				>
 					<Icon type="rotate" className="text-sm" />
 				</button>
 				<button
 					onClick={onHorizontal}
-					className=" border border-primary-blue-sky w-full flex justify-center items-center cursor-pointer hover:bg-primary-blue-sky/20 transition-colors"
+					className=" border border-primary-blue w-full flex justify-center items-center cursor-pointer hover:bg-primary-blue-sky/20 transition-colors"
 				>
 					<Icon type="flipHorizontal" className="text-sm" />
 				</button>
 				<button
 					onClick={onVertical}
-					className=" border border-primary-blue-sky w-full flex justify-center items-center rounded-tr rounded-br cursor-pointer hover:bg-primary-blue-sky/20 transition-colors"
+					className=" border border-primary-blue w-full flex justify-center items-center rounded-tr rounded-br cursor-pointer hover:bg-primary-blue-sky/20 transition-colors"
 				>
 					<Icon type="flipVertical" className="text-sm" />
 				</button>

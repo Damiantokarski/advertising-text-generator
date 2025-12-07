@@ -20,13 +20,13 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const variants = cva(
-	"flex items-center gap-1 bg-surface border border-primary-blue-sky rounded px-3 w-full",
+	"flex items-center gap-1 bg-surface border border-primary-blue rounded px-3 w-full",
 	{
 		variants: {
 			size: {
 				small: "text-tiny py-1 px-3 min-h-7 min-w-20",
-				default: "text-sm py-2 px-2 min-h-10",
-				large: "text-base py-3 px-12 min-h-12",
+				default: "text-tiny py-2 px-2 min-h-10",
+				large: "text-sm py-3 px-12 min-h-12",
 			},
 		},
 		defaultVariants: {
