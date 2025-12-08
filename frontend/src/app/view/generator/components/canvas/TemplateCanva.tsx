@@ -16,27 +16,12 @@ interface TemplateCanvaProps {
 
 export const TemplateCanva = memo(({ id, templateObj }: TemplateCanvaProps) => {
 	const dispatch = useDispatch<AppDispatch>();
+
+	const { value, locked, display } = templateObj;
+
 	const activeElement = useSelector(
 		(state: RootState) => state.generator.activeElement
 	);
-
-	const setActiveBanner = useCallback(() => {
-		dispatch(setActiveElement(templateObj.id));
-	}, [templateObj.id, dispatch]);
-
-	const dragEnd = useCallback(
-		(e: Konva.KonvaEventObject<DragEvent>) => {
-			const data = {
-				id: templateObj.id,
-				x: e.target.x(),
-				y: e.target.y(),
-			};
-			dispatch(updateTemplatePosition(data));
-		},
-		[templateObj.id, dispatch]
-	);
-
-	const { value, name, locked, display } = templateObj;
 
 	const stroke = activeElement === templateObj.id ? "#0c8ce9" : "#b1b1b1";
 	const scale = value.scale;
@@ -46,6 +31,32 @@ export const TemplateCanva = memo(({ id, templateObj }: TemplateCanvaProps) => {
 	const height = value.size.height * scale;
 	const textY = -16 * scale;
 	const fontSize = 12 * scale;
+	const name = value.name;
+
+	const setActiveBanner = useCallback(() => {
+		if (locked) {
+			return;
+		} else {
+			dispatch(setActiveElement(templateObj.id));
+		}
+	}, [templateObj.id, dispatch, locked]);
+
+	const dragEnd = useCallback(
+		(e: Konva.KonvaEventObject<DragEvent>) => {
+			if (locked) {
+				return;
+			} else {
+				dispatch(
+					updateTemplatePosition({
+						id: templateObj.id,
+						x: e.target.x(),
+						y: e.target.y(),
+					})
+				);
+			}
+		},
+		[templateObj.id, dispatch, locked]
+	);
 
 	return (
 		<Group

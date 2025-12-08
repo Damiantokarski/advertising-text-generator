@@ -28,12 +28,24 @@ type TextValue = {
 	color: string;
 	rotation: number;
 	vertical: number;
+	name: string;
 	horizontal: number;
+};
+type TemplateValue = {
+	name: string;
+	scale: number;
+	size: {
+		width: number;
+		height: number;
+	};
+	position: {
+		x: number;
+		y: number;
+	};
 };
 
 export interface Text {
 	id: string;
-	name: string;
 	type: string;
 	locked: boolean;
 	display: boolean;
@@ -42,22 +54,10 @@ export interface Text {
 
 export interface Template {
 	id: string;
-	
 	type: string;
 	locked: boolean;
 	display: boolean;
-	value: {
-		name: string;
-		scale: number;
-		size: {
-			width: number;
-			height: number;
-		};
-		position: {
-			x: number;
-			y: number;
-		};
-	};
+	value: TemplateValue;
 }
 
 export interface State {
@@ -112,6 +112,7 @@ const generator = createSlice({
 			action: PayloadAction<{ id: string; value: Template["value"] }>
 		) => {
 			const { id, value } = action.payload;
+			console.log(value);
 			const tmpl = state.templates.find((t) => t.id === id);
 			if (tmpl) {
 				tmpl.value = value;
@@ -194,6 +195,7 @@ const generator = createSlice({
 			}>
 		) => {
 			const { id, type, name } = action.payload;
+
 			if (type === "template") {
 				const idx = state.templates.findIndex((item) => item.id === id);
 				if (idx !== -1) {
@@ -202,7 +204,7 @@ const generator = createSlice({
 			} else {
 				const idx = state.texts.findIndex((item) => item.id === id);
 				if (idx !== -1) {
-					state.texts[idx].name = name;
+					state.texts[idx].value.name = name;
 				}
 			}
 		},

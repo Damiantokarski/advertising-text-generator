@@ -17,11 +17,11 @@ export const AddPsdFile = () => {
 	return (
 		<div ref={ref} className="flex items-center">
 			<button onClick={showDropDown} className="cursor-pointer">
-				<Icon type="filetypePsd" className="text-secondary-light text-lg" />
+				<Icon type="filetypePsd" className="text-secondary-light" />
 			</button>
 
 			{isOpen && (
-				<div className="px-4 py-4 bg-surface shadow rounded-lg z-1000 fixed left-100 top-4 text-tiny max-w-48 space-y-1 border-2 border-primary-blue-sky">
+				<div className="px-4 py-4 bg-surface shadow rounded-sm z-1000 fixed left-100 top-22 text-tiny max-w-48 space-y-1">
 					<Dropzone onFiles={onDrop} accept=".psd" multiple={false} />
 				</div>
 			)}

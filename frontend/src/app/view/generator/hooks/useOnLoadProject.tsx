@@ -34,11 +34,11 @@ export const useOnLoadProject = (projectId: string) => {
 					setTexts(
 						project.texts.map((txt: Text ) => ({
 							id: txt.id,
-							name: txt.name,
 							type: txt.type,
 							locked: txt.locked,
 							display: txt.display,
 							value: {
+								name: txt.value.name,
 								text: txt.value.text,
 								position: txt.value.position,
 								size: txt.value.size,
@@ -56,11 +56,11 @@ export const useOnLoadProject = (projectId: string) => {
 					setTemplates(
 						project.banners.map((tmpl: Template) => ({
 							id: tmpl.id,
-							name: tmpl.name,
 							type: tmpl.type,
 							locked: tmpl.locked,
 							display: tmpl.display,
 							value: {
+								name: tmpl.value.name,
 								position: tmpl.value.position,
 								size: tmpl.value.size,
 								scale: tmpl.value.scale ?? 1,

@@ -6,7 +6,6 @@ export const TemplateNameField = () => {
 	const { value, updateValue, disabled } = useUpdateTemplate();
 
 	const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    
 		updateValue({
 			name: e.target.value,
 		});

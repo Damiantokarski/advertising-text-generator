@@ -72,22 +72,28 @@ export const TextCanva = memo(({ id, textObj, stageRef }: TextCanvaProps) => {
 	useTextTransformer(textRef, trRef, isSelected, isEditing);
 
 	const handleActiveText = useCallback(() => {
-		if (textObj.locked) return;
-
-		dispatch(setActiveElement(textObj.id));
-	}, [dispatch, isEditing, textObj]);
+		if (textObj.locked) {
+			return;
+		} else {
+			dispatch(setActiveElement(textObj.id));
+		}
+	}, [dispatch, textObj]);
 
 	const handleDragEnd = useCallback(
 		(e: KonvaEventObject<DragEvent>) => {
-			dispatch(
-				updateTextPosition({
-					id: textObj.id,
-					x: e.target.x(),
-					y: e.target.y(),
-				})
-			);
+			if (textObj.locked) {
+				return;
+			} else {
+				dispatch(
+					updateTextPosition({
+						id: textObj.id,
+						x: e.target.x(),
+						y: e.target.y(),
+					})
+				);
+			}
 		},
-		[dispatch, textObj.id]
+		[dispatch, textObj.id, textObj.locked]
 	);
 
 	const handleTransform = useCallback(() => {

@@ -55,11 +55,11 @@ export function useCreateText() {
 
 			const newText = {
 				id: `Text-${uuidv4()}`,
-				name: "Text",
 				type: overrides?.type ?? "text",
 				locked: overrides?.locked ?? false,
 				display: overrides?.display ?? true,
 				value: {
+					name: "Text",
 					text: overrides?.value.text ?? "Przykładowy text",
 					position: {
 						x: centerX,

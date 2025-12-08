@@ -40,6 +40,7 @@ function useActiveCanvas<
 
 	const updateValue = useCallback(
 		(partial: Partial<Value>) => {
+			console.log(value)
 			if (!id || !value) return;
 			dispatch(updateAction({ id, value: { ...value, ...partial } }));
 		},

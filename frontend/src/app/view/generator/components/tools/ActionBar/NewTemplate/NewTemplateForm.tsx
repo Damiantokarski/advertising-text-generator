@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { Input } from "../../../../../../ui/Input/Input";
 import { useCreateTemplate } from "../../../../hooks/useCreateTemplate";
+import { FieldWrapper } from "../../../../../../ui/FieldWrapper";
 
 export interface NewTemplateFormProps {
 	onHideForm: () => void;
@@ -17,7 +18,7 @@ export const NewTemplateForm = ({ onHideForm }: NewTemplateFormProps) => {
 
 	const { register, handleSubmit, reset } = useForm<TemplateLayerData>({
 		defaultValues: {
-			name: "",
+			name: "Template",
 			width: 0,
 			height: 0,
 		},
@@ -31,18 +32,25 @@ export const NewTemplateForm = ({ onHideForm }: NewTemplateFormProps) => {
 	};
 
 	return (
-		<div className="px-4 py-4 bg-surface shadow rounded-lg z-1000 fixed left-100 top-4 text-tiny max-w-48 space-y-1 border-2 border-primary-blue-sky">
-			<form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-				<Input type="string" label="Name" {...register("name")} />
-				<Input type="number" label="Width" {...register("width")} />
-				<Input type="number" label="Height" {...register("height")} />
-				<button
-					type="submit"
-					className="cursor-pointer bg-primary-blue text-white px-4 py-2 rounded-sm text-sm hover:bg-primary-blue-sky transition-colors"
-				>
-					Create
-				</button>
-			</form>
-		</div>
+		<form
+			onSubmit={handleSubmit(onSubmit)}
+			className="flex flex-col gap-3 px-4 py-4 bg-surface shadow rounded-sm z-1000 fixed left-92 top-22 text-tiny "
+		>
+			<FieldWrapper title="Name" className="mb-2">
+				<Input type="string" {...register("name")} inputSize="small" placeholder="Box123" />
+			</FieldWrapper>
+			<FieldWrapper title="Width" className="mb-2">
+				<Input type="number" {...register("width")} inputSize="small" />
+			</FieldWrapper>
+			<FieldWrapper title="Height" className="mb-2">
+				<Input type="number" {...register("height")} inputSize="small" />
+			</FieldWrapper>
+			<button
+				type="submit"
+				className="cursor-pointer bg-primary-blue text-white px-4 py-1 rounded-sm text-sm hover:bg-primary-blue-sky transition-colors"
+			>
+				Create
+			</button>
+		</form>
 	);
 };

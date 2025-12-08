@@ -1,10 +1,14 @@
 import { memo, useCallback, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 
-import { setActiveElement, toogleBlockElement, toogleHideElement, updateElementName } from "../../../../../store/slices/generator";
+import {
+	setActiveElement,
+	toogleBlockElement,
+	toogleHideElement,
+	updateElementName,
+} from "../../../../../store/slices/generator";
 import type { AppDispatch, RootState } from "../../../../../store/store";
 import { Icon } from "../../../../../ui/Icon";
-
 
 export interface ElementItemProps {
 	id: string;
@@ -12,12 +16,7 @@ export interface ElementItemProps {
 }
 
 export const ElementItem = memo(({ id, type }: ElementItemProps) => {
-	const activeElement = useSelector(
-		(state: RootState) => state.generator.activeElement
-	);
-	const dispatch = useDispatch<AppDispatch>();
-
-	const { name, locked, display } = useSelector(
+	const { value, locked, display } = useSelector(
 		(s: RootState) =>
 			s.generator[type === "text" ? "texts" : "templates"].find(
 				(el) => el.id === id
@@ -26,16 +25,21 @@ export const ElementItem = memo(({ id, type }: ElementItemProps) => {
 	);
 
 	const [editing, setEditing] = useState(false);
-	const [val, setVal] = useState(name);
+	const [val, setVal] = useState(value.name);
+
+	const activeElement = useSelector(
+		(state: RootState) => state.generator.activeElement
+	);
+	const dispatch = useDispatch<AppDispatch>();
 
 	const onFocus = useCallback(() => {
 		dispatch(setActiveElement(id));
 	}, [dispatch, id]);
 
 	const onDouble = useCallback(() => {
-		setVal(name);
+		setVal(value.name);
 		setEditing(true);
-	}, [name]);
+	}, [value.name]);
 
 	const onBlur = useCallback(() => {
 		if (val.trim()) {
@@ -71,8 +75,8 @@ export const ElementItem = memo(({ id, type }: ElementItemProps) => {
 				/>
 				<input
 					type="text"
-					className="text-tiny outline-none bg-transparent max-w-16 cursor-pointer text-secondary-light"
-					value={editing ? val : name}
+					className="text-tiny outline-none bg-transparent max-w-32 cursor-pointer text-secondary-light truncate"
+					value={editing ? val : value.name}
 					readOnly={!editing}
 					onChange={(e) => setVal(e.target.value)}
 					onBlur={onBlur}

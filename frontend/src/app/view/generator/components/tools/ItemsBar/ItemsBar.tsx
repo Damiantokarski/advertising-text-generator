@@ -23,7 +23,7 @@ export const ItemsBar = ({ title }: ItemsBarProps) => {
 	return (
 		<FieldWrapper
 			title={title ? title + ":" : ""}
-			wrapperClass="fixed z-30 left-20 top-0  shadow w-2xs px-8 py-7 flex flex-col bg-surface m-4 rounded-lg h-[calc(100vh-32px)] border-2 border-primary-blue-sky"
+			wrapperClass="fixed z-30 left-0 top-0 shadow w-2xs px-8 py-7 flex flex-col bg-surface m-4 rounded-sm h-[calc(100vh-32px)]"
 		>
 			<Title
 				as="h3"

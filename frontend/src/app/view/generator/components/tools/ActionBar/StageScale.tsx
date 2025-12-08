@@ -19,7 +19,7 @@ export const StageScale = ({
 	const zoomOut = () => onChange(clamp(scale - step));
 
 	return (
-		<div className="w-4 flex flex-col items-center gap-4  ">
+		<div className="flex gap-2 items-center">
 			<button
 				onClick={zoomIn}
 				disabled={scale >= maxScale}

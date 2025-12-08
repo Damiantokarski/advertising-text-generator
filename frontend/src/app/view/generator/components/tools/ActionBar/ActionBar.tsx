@@ -12,12 +12,12 @@ export interface ToolsProps {
 
 export const ActionBar = ({ scale, onChange }: ToolsProps) => {
 	return (
-		<section className="fixed top-0 left-0 flex flex-col items-center justify-between gap-4 p-4 shadow w-16 bg-surface m-4 rounded-lg h-[calc(100vh-32px)] border-2 border-primary-blue-sky">
-			<div className="flex flex-col items-center gap-4 justify-center">
+		<section className="fixed top-0 left-76 flex  items-center justify-between gap-4 p-4 shadow  bg-surface m-4 rounded-sm  w-full max-w-[calc(100%-640px)]">
+			<div className="flex items-center gap-4 justify-center">
 				<CreateNewText />
 				<CreateNewTemplate />
 				<AddPsdFile />
-				<div className="mt-10 flex flex-col gap-4">
+				<div className="flex gap-4 items-center justify-center">
 					<SaveProject />
 					<DeleteElement />
 				</div>

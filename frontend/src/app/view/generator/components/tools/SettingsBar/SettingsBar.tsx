@@ -33,7 +33,7 @@ export const SettingsBar = () => {
 	return (
 		<section
 			id="properties-panel"
-			className={`fixed top-0 w-2xs bg-secondary-black shadow p-8 space-y-4 z-10 overflow-auto hidden-scrollbar transition-all bg-surface m-4 h-[calc(100vh-32px)] rounded-lg border-2 border-primary-blue-sky
+			className={`fixed top-0 w-2xs bg-secondary-black shadow p-8 space-y-4 z-10 overflow-auto hidden-scrollbar transition-all bg-surface m-4 h-[calc(100vh-32px)] rounded-sm
          ${isOpen ? "right-0" : "-right-76"} `}
 		>
 			{isTemplate && (
