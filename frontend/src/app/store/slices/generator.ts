@@ -262,6 +262,25 @@ const generator = createSlice({
 		) => {
 			state.stagePosition = action.payload;
 		},
+		moveCanvas(
+			state,
+			action: PayloadAction<{ id: string; dx: number; dy: number }>
+		) {
+			const { id, dx, dy } = action.payload;
+
+			const text = state.texts.find((t) => t.id === id);
+			if (text) {
+				text.value.position.x += dx;
+				text.value.position.y += dy;
+				return;
+			}
+
+			const template = state.templates.find((t) => t.id === id);
+			if (template) {
+				template.value.position.x += dx;
+				template.value.position.y += dy;
+			}
+		},
 	},
 });
 
@@ -283,5 +302,6 @@ export const {
 	setActiveElement,
 	setProjectScale,
 	setStagePosition,
+	moveCanvas,
 } = generator.actions;
 export default generator.reducer;

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useWindowSize } from "./hooks/useWindowSize";
 import { Stage, Layer } from "react-konva";
 import Konva from "konva";
@@ -10,6 +10,7 @@ import type { RootState } from "../../store/store";
 import { TextCanva } from "./components/canvas/TextCanva";
 import { TemplateCanva } from "./components/canvas/TemplateCanva";
 import {
+	moveCanvas,
 	setActiveElement,
 	setStagePosition,
 } from "../../store/slices/generator";
@@ -25,6 +26,43 @@ export const Generator = () => {
 	const dispatch = useDispatch();
 	const { projectId } = useParams<{ projectId: string }>();
 	const { projectJob, projectTitle } = useOnLoadProject(projectId || "");
+
+	const activeElementId = useSelector(
+		(state: RootState) => state.generator.activeElement
+	);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (!activeElementId) return;
+
+			let dx = 0;
+			let dy = 0;
+			const step = e.shiftKey ? 10 : 1;
+
+			switch (e.key) {
+				case "ArrowUp":
+					dy = -step;
+					break;
+				case "ArrowDown":
+					dy = step;
+					break;
+				case "ArrowLeft":
+					dx = -step;
+					break;
+				case "ArrowRight":
+					dx = step;
+					break;
+				default:
+					return;
+			}
+
+			e.preventDefault(); // żeby strona się nie przewijała
+			dispatch(moveCanvas({ id: activeElementId, dx, dy }));
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [activeElementId, dispatch]);
 
 	const texts = useSelector(
 		(state: RootState) => state.generator.texts,
@@ -61,15 +99,12 @@ export const Generator = () => {
 		},
 		[dispatch]
 	);
+	
 	// generowanie elementów na canvasie
 	const templateCanvas = useMemo(
 		() =>
 			templates.map((template) => (
-				<TemplateCanva
-					id={template.id}
-					key={template.id}
-					templateObj={template}
-				/>
+				<TemplateCanva id={template.id} key={template.id} templateObj={template} />
 			)),
 		[templates]
 	);
