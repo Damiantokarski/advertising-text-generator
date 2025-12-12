@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { deleteProjectApi, updateProjectApi } from "../../../api/projectsApi";
 
 type Position = {
 	x: number;
@@ -21,27 +22,22 @@ type Typography = {
 };
 
 type TextValue = {
-	text: string;
-	position: Position;
+	name: string;
 	size: Size;
+	position: Position;
+	text: string;
 	typography: Typography;
 	color: string;
 	rotation: number;
 	vertical: number;
-	name: string;
 	horizontal: number;
 };
 type TemplateValue = {
 	name: string;
+	size: Size;
+	position: Position;
+
 	scale: number;
-	size: {
-		width: number;
-		height: number;
-	};
-	position: {
-		x: number;
-		y: number;
-	};
 };
 
 export interface Text {
@@ -66,6 +62,7 @@ export interface State {
 	activeElement: string | null;
 	scale: number;
 	stagePosition: { x: number; y: number };
+	selectedElements: string[];
 }
 
 const initialState: State = {
@@ -74,12 +71,12 @@ const initialState: State = {
 	activeElement: null,
 	scale: 1,
 	stagePosition: { x: 0, y: 0 },
+	selectedElements: [],
 };
 
 const generator = createSlice({
 	name: "generator",
 	initialState,
-
 	reducers: {
 		setTexts: (state, action: PayloadAction<Text[]>) => {
 			state.texts = action.payload;
@@ -107,12 +104,15 @@ const generator = createSlice({
 			}
 		},
 
+		setSelectedElements: (state, action: PayloadAction<string[]>) => {
+			state.selectedElements = action.payload;
+		},
+
 		updateTemplateValue: (
 			state,
 			action: PayloadAction<{ id: string; value: Template["value"] }>
 		) => {
 			const { id, value } = action.payload;
-			console.log(value);
 			const tmpl = state.templates.find((t) => t.id === id);
 			if (tmpl) {
 				tmpl.value = value;
@@ -166,25 +166,18 @@ const generator = createSlice({
 			}
 		},
 
-		deleteElement: (
-			state,
-			action: PayloadAction<{
-				id: string;
-			}>
-		) => {
-			const { id } = action.payload;
+		deleteElement: (state, action: PayloadAction<string[]>) => {
+			const selectedElements = action.payload;
 
-			if (id.includes("Template")) {
-				const idx = state.templates.findIndex((item) => item.id === id);
-				if (idx !== -1) {
-					state.templates.splice(idx, 1);
-				}
-			} else {
-				const idx = state.texts.findIndex((item) => item.id === id);
-				if (idx !== -1) {
-					state.texts.splice(idx, 1);
-				}
-			}
+			state.texts = state.texts.filter(
+				(item) => !selectedElements.includes(item.id)
+			);
+
+			state.templates = state.templates.filter(
+				(item) => !selectedElements.includes(item.id)
+			);
+
+			state.selectedElements = [];
 		},
 		updateElementName: (
 			state,
@@ -262,6 +255,7 @@ const generator = createSlice({
 		) => {
 			state.stagePosition = action.payload;
 		},
+
 		moveCanvas(
 			state,
 			action: PayloadAction<{ id: string; dx: number; dy: number }>
@@ -280,6 +274,31 @@ const generator = createSlice({
 				template.value.position.x += dx;
 				template.value.position.y += dy;
 			}
+		},
+		saveProject: (state, action: PayloadAction<{ id: string }>) => {
+			const { id } = action.payload;
+			updateProjectApi(id, state.texts, state.templates);
+		},
+
+		deleteProjectItems: (state, action: PayloadAction<{ id: string }>) => {
+			const { id } = action.payload;
+			deleteProjectApi(id, state.selectedElements);
+			state.texts = state.texts.filter(
+				(item) => !state.selectedElements.includes(item.id)
+			);
+
+			state.templates = state.templates.filter(
+				(item) => !state.selectedElements.includes(item.id)
+			);
+
+			state.selectedElements = [];
+		},
+		selectAllElements: (state) => {
+			const allElementIds = [
+				...state.texts.map((text) => text.id),
+				...state.templates.map((template) => template.id),
+			];
+			state.selectedElements = allElementIds;
 		},
 	},
 });
@@ -303,5 +322,9 @@ export const {
 	setProjectScale,
 	setStagePosition,
 	moveCanvas,
+	setSelectedElements,
+	saveProject,
+	deleteProjectItems,
+	selectAllElements,
 } = generator.actions;
 export default generator.reducer;

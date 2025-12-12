@@ -1,6 +1,11 @@
 import type { RootState } from "../../../../../store/store";
 import { useSelector } from "react-redux";
-import { useEffect, useMemo, useState } from "react";
+import {
+	useMemo,
+	type Dispatch,
+	type RefObject,
+	type SetStateAction,
+} from "react";
 import { TemplateScaleField } from "./Fields/TemplateScaleField";
 import { SizeField } from "./Fields/SizeField";
 import { PositionField } from "./Fields/PositionField";
@@ -12,30 +17,58 @@ import { TextField } from "./Fields/TextField";
 import { FontFields } from "./Fields/FontFields";
 import { TemplateSizeField } from "./Fields/TemplateSizeField";
 import { TemplateNameField } from "./Fields/TemplateNameField";
+import { ExportField } from "./Fields/ExportField";
+import Konva from "konva";
+import { FieldWrapper } from "../../../../../ui/FieldWrapper";
+import { Icon } from "../../../../../ui/Icon";
 
-export const SettingsBar = () => {
-	const [isOpen, setIsOpen] = useState(false);
-	const activeElement = useSelector(
-		(state: RootState) => state.generator.activeElement
+interface SettingsBarProps {
+	stageRef: RefObject<Konva.Stage | null>;
+	setBarsState: Dispatch<
+		SetStateAction<{
+			isSettingsBarOpen: boolean;
+			isItemsBarOpen: boolean;
+		}>
+	>;
+	isOpen?: boolean;
+}
+
+export const SettingsBar = ({
+	stageRef,
+	setBarsState,
+	isOpen,
+}: SettingsBarProps) => {
+	const selectedElement = useSelector(
+		(state: RootState) => state.generator.selectedElements[0]
 	);
 
 	const isTemplate = useMemo(
-		() => activeElement?.includes("Template"),
-		[activeElement]
+		() => selectedElement?.includes("Template"),
+		[selectedElement]
 	);
-	const isText = useMemo(() => activeElement?.includes("Text"), [activeElement]);
+	const isText = useMemo(
+		() => selectedElement?.includes("Text"),
+		[selectedElement]
+	);
 
-	useEffect(() => {
-		if (isText || isTemplate) setIsOpen(true);
-		else setIsOpen(false);
-	}, [isText, isTemplate]);
+	const handleSettingBarToggle = () => {
+		setBarsState((prev) => ({
+			...prev,
+			isSettingsBarOpen: !prev.isSettingsBarOpen,
+		}));
+	};
 
 	return (
-		<section
-			id="properties-panel"
-			className={`fixed top-0 w-2xs bg-secondary-black shadow p-8 space-y-4 z-10 overflow-auto hidden-scrollbar transition-all bg-surface m-4 h-[calc(100vh-32px)] rounded-sm
-         ${isOpen ? "right-0" : "-right-76"} `}
+		<FieldWrapper
+			wrapperClass={`fixed z-30  top-0 shadow w-2xs px-8 py-7 flex flex-col bg-surface m-4 rounded-sm h-[calc(100vh-32px)] transition-all ${isOpen ? "right-0" : "-right-66"}`}
 		>
+			<button
+				className={`absolute top-3 left-3 cursor-pointer transition-transform ${isOpen ? "" : "rotate-180"}`}
+				disabled={!isTemplate && !isText}
+				onClick={handleSettingBarToggle}
+			>
+				<Icon type="arrowRight" />
+			</button>
 			{isTemplate && (
 				<>
 					<TemplateNameField />
@@ -54,9 +87,9 @@ export const SettingsBar = () => {
 					<SpaceField />
 					<AlignField />
 					<ColorField />
-					{/* EXPORT */}
+					<ExportField stageRef={stageRef} />
 				</>
 			)}
-		</section>
+		</FieldWrapper>
 	);
 };

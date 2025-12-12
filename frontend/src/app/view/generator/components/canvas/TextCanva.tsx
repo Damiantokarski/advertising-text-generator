@@ -1,24 +1,24 @@
-import React, { useRef, useCallback, memo } from "react";
+import React, { useRef, useCallback, memo, type RefObject } from "react";
 import Konva from "konva";
 import { Group, Text as KonvaText, Transformer } from "react-konva";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../../store/store";
 import {
-	setActiveElement,
-	updateTextContainerSize,
+	setSelectedElements,
 	updateTextPosition,
-	updateTextRotation,
 	type Text,
 } from "../../../../store/slices/generator";
 import type { KonvaEventObject } from "konva/lib/Node";
 import { TextEditor } from "./TextEditor";
 import { useTextEditing } from "../../hooks/useTextEditing";
 import { useTextTransformer } from "../../hooks/useTextTransformer";
+import { snapLinesPosition } from "../../../../utils/snapLines";
+import { useSnapElements } from "../../hooks/useSnapElements";
+import { useTextTransformHandlers } from "../../hooks/useTextTransformHandlers";
 
 interface TextCanvaProps {
-	id: string;
 	textObj: Text;
-	stageRef: React.RefObject<Konva.Stage | null>;
+	stageRef: RefObject<Konva.Stage | null>;
 }
 
 const ANCHORS = [
@@ -32,20 +32,17 @@ const ANCHORS = [
 	"middle-left",
 ];
 
-export const TextCanva = memo(({ id, textObj, stageRef }: TextCanvaProps) => {
+const TextCanvaComponent = ({ textObj, stageRef }: TextCanvaProps) => {
 	const dispatch = useDispatch<AppDispatch>();
 
-	const activeElement = useSelector(
-		(state: RootState) => state.generator.activeElement
+	const selectedElements = useSelector(
+		(state: RootState) => state.generator.selectedElements
 	);
-	const isSelected = activeElement === textObj.id;
+	const isSelected = selectedElements.includes(textObj.id);
+
 	const textRef = useRef<Konva.Text>(null);
 	const groupRef = useRef<Konva.Group>(null);
 	const trRef = useRef<Konva.Transformer>(null);
-	const sizeRef = useRef({
-		width: textObj.value.size.width,
-		height: textObj.value.size.height,
-	});
 
 	const {
 		value: {
@@ -60,68 +57,74 @@ export const TextCanva = memo(({ id, textObj, stageRef }: TextCanvaProps) => {
 		},
 	} = textObj;
 
-	const textNode = textRef.current;
-	const stageNode = stageRef.current;
+	const snapElements = useSnapElements();
 
 	const { isEditing, finishEditing, handleDblClick } = useTextEditing(
 		textObj,
-		textNode,
-		stageNode
+		textRef.current,
+		stageRef.current
 	);
 
 	useTextTransformer(textRef, trRef, isSelected, isEditing);
 
+	const { handleTransform, handleTransformEnd } = useTextTransformHandlers(
+		textObj.id,
+		textRef
+	);
+
 	const handleActiveText = useCallback(() => {
-		if (textObj.locked) {
-			return;
-		} else {
-			dispatch(setActiveElement(textObj.id));
-		}
+		if (textObj.locked) return;
+		dispatch(setSelectedElements([textObj.id]));
 	}, [dispatch, textObj]);
 
 	const handleDragEnd = useCallback(
 		(e: KonvaEventObject<DragEvent>) => {
-			if (textObj.locked) {
-				return;
-			} else {
-				dispatch(
-					updateTextPosition({
-						id: textObj.id,
-						x: e.target.x(),
-						y: e.target.y(),
-					})
-				);
-			}
+			if (textObj.locked) return;
+
+			dispatch(
+				updateTextPosition({
+					id: textObj.id,
+					x: e.target.x(),
+					y: e.target.y(),
+				})
+			);
 		},
 		[dispatch, textObj.id, textObj.locked]
 	);
 
-	const handleTransform = useCallback(() => {
-		if (!textNode) return;
-		const scaleX = textNode.scaleX();
-		const scaleY = textNode.scaleY();
-		const newWidth = Math.max(20, textNode.width() * scaleX);
-		const newHeight = Math.max(20, textNode.height() * scaleY);
-		textNode.width(newWidth);
-		textNode.height(newHeight);
-		textNode.scale({ x: 1, y: 1 });
-		textNode.offset({ x: newWidth / 2, y: newHeight / 2 });
-		sizeRef.current = { width: newWidth, height: newHeight };
-		textNode.getLayer()?.batchDraw();
-	}, [textNode]);
+	const dragBoundFunc = useCallback(
+		(pos: Konva.Vector2d) => {
+			const stage = stageRef.current;
+			if (!stage) return pos;
 
-	const handleTransformEnd = useCallback(() => {
-		if (!textNode) return;
-		dispatch(updateTextContainerSize({ id: textObj.id, ...sizeRef.current }));
-		dispatch(
-			updateTextRotation({ id: textObj.id, rotation: textNode.rotation() })
-		);
-	}, [dispatch, textObj.id, textNode]);
+			const scale = stage.scaleX() || 1;
+
+			const stagePos = stage.position();
+
+			const logicalPos = {
+				x: (pos.x - stagePos.x) / scale,
+				y: (pos.y - stagePos.y) / scale,
+			};
+
+			const snappedLogical = snapLinesPosition(
+				textObj.id,
+				snapElements,
+				logicalPos
+			);
+
+			return {
+				x: snappedLogical.x * scale + stagePos.x,
+				y: snappedLogical.y * scale + stagePos.y,
+			};
+		},
+		[snapElements, textObj.id, stageRef]
+	);
 
 	return (
 		<>
 			<Group
-				id={id}
+				id={textObj.id}
+				name="selectable"
 				ref={groupRef}
 				x={x}
 				y={y}
@@ -132,6 +135,7 @@ export const TextCanva = memo(({ id, textObj, stageRef }: TextCanvaProps) => {
 				onClick={handleActiveText}
 				onDblClick={handleDblClick}
 				onDragEnd={handleDragEnd}
+				dragBoundFunc={dragBoundFunc}
 			>
 				<KonvaText
 					ref={textRef}
@@ -140,8 +144,6 @@ export const TextCanva = memo(({ id, textObj, stageRef }: TextCanvaProps) => {
 					width={size.width}
 					height={size.height}
 					rotation={rotation}
-					offsetX={sizeRef.current.width / 2}
-					offsetY={sizeRef.current.height / 2}
 					padding={3}
 					fontSize={typography.fontSize}
 					fontFamily={typography.fontFamily}
@@ -152,6 +154,7 @@ export const TextCanva = memo(({ id, textObj, stageRef }: TextCanvaProps) => {
 					onTransform={handleTransform}
 					onTransformEnd={handleTransformEnd}
 				/>
+
 				{isEditing && (
 					<TextEditor
 						stageRef={stageRef}
@@ -164,6 +167,7 @@ export const TextCanva = memo(({ id, textObj, stageRef }: TextCanvaProps) => {
 
 			{isSelected && !isEditing && !textObj.locked && (
 				<Transformer
+					name="Transformer"
 					ref={trRef}
 					anchorSize={5}
 					rotateEnabled
@@ -175,4 +179,6 @@ export const TextCanva = memo(({ id, textObj, stageRef }: TextCanvaProps) => {
 			)}
 		</>
 	);
-});
+};
+
+export const TextCanva = memo(TextCanvaComponent);

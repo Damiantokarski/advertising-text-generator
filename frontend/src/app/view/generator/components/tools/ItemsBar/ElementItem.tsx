@@ -2,7 +2,7 @@ import { memo, useCallback, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
 
 import {
-	setActiveElement,
+	setSelectedElements,
 	toogleBlockElement,
 	toogleHideElement,
 	updateElementName,
@@ -27,13 +27,14 @@ export const ElementItem = memo(({ id, type }: ElementItemProps) => {
 	const [editing, setEditing] = useState(false);
 	const [val, setVal] = useState(value.name);
 
-	const activeElement = useSelector(
-		(state: RootState) => state.generator.activeElement
+	const selectedElements = useSelector(
+		(state: RootState) => state.generator.selectedElements
 	);
+
 	const dispatch = useDispatch<AppDispatch>();
 
 	const onFocus = useCallback(() => {
-		dispatch(setActiveElement(id));
+		dispatch(setSelectedElements([id]));
 	}, [dispatch, id]);
 
 	const onDouble = useCallback(() => {
@@ -59,7 +60,7 @@ export const ElementItem = memo(({ id, type }: ElementItemProps) => {
 	return (
 		<div
 			className={`relative flex justify-between items-center border px-2 rounded py-1 ${
-				editing || activeElement === id
+				editing || selectedElements.includes(id)
 					? "border-primary-blue"
 					: "border-transparent"
 			}`}

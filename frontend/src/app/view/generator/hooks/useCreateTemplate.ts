@@ -18,7 +18,7 @@ export function useCreateTemplate() {
 			if (!stage) return;
 
 			const centerX =
-				Math.floor(windowWidth / 2 + -stage.x() - 256) / stage.scaleX() -
+				Math.floor(windowWidth / 2 + -stage.x() + 40) / stage.scaleX() -
 				template.width / 2;
 			const centerY =
 				Math.floor(windowHeight / 2 + -stage.y()) / stage.scaleX() -

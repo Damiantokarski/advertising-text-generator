@@ -8,11 +8,32 @@ import { StageScale } from "./StageScale";
 export interface ToolsProps {
 	scale: number;
 	onChange: (newScale: number) => void;
+	barsState: {
+		isSettingsBarOpen: boolean;
+		isItemsBarOpen: boolean;
+	};
 }
 
-export const ActionBar = ({ scale, onChange }: ToolsProps) => {
+export const ActionBar = ({ scale, onChange, barsState }: ToolsProps) => {
+	const { isItemsBarOpen, isSettingsBarOpen } = barsState;
+
+	let maxWidth = "max-w-[calc(100%-113px)]";
+
+	if (
+		(isItemsBarOpen && !isSettingsBarOpen) ||
+		(!isItemsBarOpen && isSettingsBarOpen)
+	) {
+		maxWidth = "max-w-[calc(100%-377px)]";
+	} else if (isItemsBarOpen && isSettingsBarOpen) {
+		maxWidth = "max-w-[calc(100%-640px)]";
+	}
+
+	const left = isItemsBarOpen ? "left-76" : "left-10";
+
 	return (
-		<section className="fixed top-0 left-76 flex  items-center justify-between gap-4 p-4 shadow  bg-surface m-4 rounded-sm  w-full max-w-[calc(100%-640px)]">
+		<section
+			className={`fixed top-0 flex  items-center justify-between gap-4 p-4 shadow  bg-surface m-4 rounded-sm w-full  transition-all ${left} ${maxWidth}`}
+		>
 			<div className="flex items-center gap-4 justify-center">
 				<CreateNewText />
 				<CreateNewTemplate />

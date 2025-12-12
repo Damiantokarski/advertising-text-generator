@@ -18,7 +18,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
 	const navigate = useNavigate();
 
 	const handleCurrentProject = () =>
-		navigate(`/text-generator/project/${project.projectId}`);
+		navigate(`/text-generator/project/${project.id}`);
 
 	return (
 		<article

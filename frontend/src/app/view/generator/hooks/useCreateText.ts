@@ -62,7 +62,7 @@ export function useCreateText() {
 					name: "Text",
 					text: overrides?.value.text ?? "Przykładowy text",
 					position: {
-						x: centerX,
+						x: centerX + 40,
 						y: centerY,
 					},
 					size,

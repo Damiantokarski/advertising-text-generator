@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 
 import { useDispatch } from "react-redux";
-import { setProjectScale, setStagePosition, setTemplates, setTexts, type Template, type Text } from "../../../store/slices/generator";
+import {
+	setProjectScale,
+	setStagePosition,
+	setTemplates,
+	setTexts,
+	type Template,
+	type Text,
+} from "../../../store/slices/generator";
 import { getProjectApi } from "../../../../api/projectsApi";
 
-export const useOnLoadProject = (projectId: string) => {
+export const useOnLoadProject = (id: string) => {
 	const [projectJob, setProjectJob] = useState<string>("");
 	const [projectName, setProjectName] = useState<string>("");
 	const [projectTitle, setProjectTitle] = useState<string>("");
@@ -12,10 +19,10 @@ export const useOnLoadProject = (projectId: string) => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		if (!projectId) return;
+		if (!id) return;
 		const load = async () => {
 			try {
-				const { project } = await getProjectApi(projectId);
+				const { project } = await getProjectApi(id);
 
 				setProjectJob(project.job);
 				setProjectName(project.name);
@@ -32,7 +39,7 @@ export const useOnLoadProject = (projectId: string) => {
 
 				dispatch(
 					setTexts(
-						project.texts.map((txt: Text ) => ({
+						project.texts.map((txt: Text) => ({
 							id: txt.id,
 							type: txt.type,
 							locked: txt.locked,
@@ -54,7 +61,7 @@ export const useOnLoadProject = (projectId: string) => {
 
 				dispatch(
 					setTemplates(
-						project.banners.map((tmpl: Template) => ({
+						project.templates.map((tmpl: Template) => ({
 							id: tmpl.id,
 							type: tmpl.type,
 							locked: tmpl.locked,
@@ -74,6 +81,6 @@ export const useOnLoadProject = (projectId: string) => {
 		};
 
 		load();
-	}, [projectId, dispatch]);
+	}, [id, dispatch]);
 	return { projectJob, projectName, projectTitle };
 };

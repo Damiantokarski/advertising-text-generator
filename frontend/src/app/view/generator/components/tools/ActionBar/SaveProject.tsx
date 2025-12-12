@@ -1,23 +1,20 @@
 import { useSelector } from "react-redux";
 
-import { useCallback } from "react";
 import { useParams } from "react-router-dom";
 
 import { Icon } from "../../../../../ui/Icon";
 import type { RootState } from "../../../../../store/store";
+import { updateProjectApi } from "../../../../../../api/projectsApi";
 
 export const SaveProject = () => {
-	const { projectId } = useParams();
+	const { id } = useParams();
 	const texts = useSelector((state: RootState) => state.generator.texts);
 	const templates = useSelector((state: RootState) => state.generator.templates);
 
-	const handleSaveProjectElements = useCallback(async () => {
-		if (!projectId) {
-			console.error("Brak projectId w URL");
-			return;
-		}
-		console.log(texts, templates);
-	}, [projectId, texts, templates]);
+	const handleSaveProjectElements = async () => {
+		if (!id) return;
+		await updateProjectApi(id, texts, templates);
+	};
 
 	return (
 		<button onClick={handleSaveProjectElements} className="cursor-pointer">

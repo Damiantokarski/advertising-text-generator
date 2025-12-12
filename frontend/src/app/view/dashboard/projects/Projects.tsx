@@ -32,12 +32,10 @@ export const Projects = () => {
 			className: "max-w-3xl",
 		});
 	};
-	console.log(projects);
 
 	const createProject = async (data: ProjectFormData) => {
-		console.log(data);
-		const response = await createProjectApi(data);
-		console.log("Project created:", response);
+		await createProjectApi(data);
+
 		refetch();
 		closeModal();
 	};

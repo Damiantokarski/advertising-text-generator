@@ -3,22 +3,27 @@ import { useCallback } from "react";
 import { Icon } from "../../../../../ui/Icon";
 import type { RootState } from "../../../../../store/store";
 import { deleteElement } from "../../../../../store/slices/generator";
-
+import { deleteProjectApi } from "../../../../../../api/projectsApi";
+import { useParams } from "react-router-dom";
 
 export const DeleteElement = () => {
 	const dispatch = useDispatch();
-	
-	const activeElementId = useSelector(
-		(state: RootState) => state.generator.activeElement
+	const { id } = useParams<{ id: string }>();
+
+	const selectedElements = useSelector(
+		(state: RootState) => state.generator.selectedElements
 	);
 
 	const handleDelete = useCallback(() => {
-		if (activeElementId) dispatch(deleteElement({ id: activeElementId }));
-	}, [activeElementId, dispatch]);
+		if (id && selectedElements.length > 0) {
+			deleteProjectApi(id, selectedElements);
+			dispatch(deleteElement(selectedElements));
+		}
+	}, [selectedElements, id, dispatch]);
 
 	return (
 		<button onClick={handleDelete} className="cursor-pointer">
-			<Icon type="trash" className="text-secondary-light text-lg text-fire"  />
+			<Icon type="trash" className="text-secondary-light text-lg text-fire" />
 		</button>
 	);
 };
