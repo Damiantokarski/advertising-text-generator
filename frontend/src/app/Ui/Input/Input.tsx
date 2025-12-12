@@ -5,7 +5,7 @@ import { InputPrefix } from "./InputPrefix";
 import { InputField } from "./InputField";
 import { InputSuffix } from "./InputSufix";
 import { cva } from "class-variance-authority";
-import type {  UseFormRegisterReturn } from "react-hook-form";
+import type { UseFormRegisterReturn } from "react-hook-form";
 
 type SizeVariant = "small" | "default" | "large";
 
@@ -20,13 +20,13 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const variants = cva(
-	"flex items-center gap-1 bg-surface border border-primary-blue-sky rounded px-3 w-full",
+	"has-[:disabled]:border-gray-200 has-[:disabled]:text-gray-200 flex items-center gap-1 bg-surface border border-primary-blue rounded px-3 w-full",
 	{
 		variants: {
 			size: {
 				small: "text-tiny py-1 px-3 min-h-7 min-w-20",
-				default: "text-sm py-2 px-2 min-h-10",
-				large: "text-base py-3 px-12 min-h-12",
+				default: "text-tiny py-2 px-2 min-h-10",
+				large: "text-sm py-3 px-12 min-h-12",
 			},
 		},
 		defaultVariants: {

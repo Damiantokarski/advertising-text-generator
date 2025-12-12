@@ -1,5 +1,4 @@
 import { prisma } from "../../lib/prisma";
-import { v4 as uuidv4 } from "uuid";
 
 export const getProjectsService = async (
 	page = 1,
@@ -25,7 +24,7 @@ export const getProjectsService = async (
 			prisma.project.count({ where }),
 			prisma.project.findMany({
 				where,
-				include: { texts: true, banners: true },
+				include: { texts: true, templates: true },
 				skip,
 				take,
 				orderBy: { createdAt: "desc" },
@@ -64,7 +63,6 @@ export const createProjectService = async (data: {
 }) => {
 	try {
 		const { name, task, title, priority } = data;
-		console.log(data);
 
 		const existingProject = await prisma.project.findFirst({
 			where: { job: task },
@@ -77,19 +75,98 @@ export const createProjectService = async (data: {
 			};
 		}
 
-		const projectId = uuidv4();
-
 		await prisma.project.create({
 			data: {
-				projectId,
 				name,
 				job: task,
 				title,
 				status: priority,
 			},
 		});
-		return { status: true, message: "Project created successfully", projectId };
+		return { status: true, message: "Project created successfully" };
 	} catch (error) {
 		return { status: false, message: "Failed to create project" };
+	}
+};
+
+export const getProject = async (id: string) => {
+	try {
+		const project = await prisma.project.findFirst({
+			where: { id },
+			include: {
+				texts: true,
+				templates: true,
+				projectSettings: true,
+			},
+		});
+		return {
+			project: {
+				id: project?.id,
+				...project,
+			},
+			status: true,
+			message: "Project fetched successfully",
+		};
+	} catch (error) {
+		return { project: null, status: false, message: "Failed to fetch project" };
+	}
+};
+
+export const updateProjectService = async (
+	id: string,
+	texts: any[],
+	templates: any[]
+) => {
+	try {
+		await prisma.project.update({
+			where: { id },
+			data: {
+				texts: {
+					deleteMany: {},
+					createMany: {
+						data: texts.map((text) => ({
+							...text,
+						})),
+					},
+				},
+				templates: {
+					deleteMany: {},
+					createMany: {
+						data: templates.map((template) => ({
+							...template,
+						})),
+					},
+				},
+			},
+		});
+		return { status: true, message: "Project updated successfully" };
+	} catch (error) {
+		console.error("Error updating project:", error);
+		return { status: false, message: "Failed to update project" };
+	}
+};
+
+export const deleteProjectItemsService = async (
+	id: string,
+	selectedItems: string[]
+) => {
+	try {
+		await prisma.$transaction([
+			prisma.text.deleteMany({
+				where: {
+					id: { in: selectedItems },
+					projectId: id,
+				},
+			}),
+			prisma.template.deleteMany({
+				where: {
+					id: { in: selectedItems },
+					projectId: id,
+				},
+			}),
+		]);
+		return { status: true, message: "Items deleted successfully" };
+	} catch (error) {
+		return { status: false, message: "Failed to delete items" };
 	}
 };

@@ -35,7 +35,7 @@ export const Dropzone = ({
 	} = useDropzone({ onFiles, onError, accept, multiple, maxSizeMB, disabled });
 
 	const baseStyles =
-		"flex flex-col items-center justify-center gap-3 w-full rounded-2xl border-2 border-dashed p-8 transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer select-none max-w-196";
+		"flex flex-col items-center justify-center gap-3 w-full rounded-sm border-2 border-dashed p-8 transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer select-none max-w-196";
 	const stateStyles = disabled
 		? "opacity-50 cursor-not-allowed"
 		: isDragOver
@@ -64,9 +64,9 @@ export const Dropzone = ({
 			>
 				<Icon
 					type="cloudArrowDown"
-					className="text-4xl text-primary-blue-sky "
+					className="text-2xl text-primary-blue-sky "
 				/>
-				<p>Drag & drop or select files</p>
+				<p className="text-center">Drag & drop or select files</p>
 
 				<input
 					ref={inputRef}

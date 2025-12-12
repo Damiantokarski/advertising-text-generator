@@ -1,0 +1,29 @@
+import { useDispatch, useSelector } from "react-redux";
+import { useCallback } from "react";
+import { Icon } from "../../../../../ui/Icon";
+import type { RootState } from "../../../../../store/store";
+import { deleteElement } from "../../../../../store/slices/generator";
+import { deleteProjectItemsApi } from "../../../../../../api/projectsApi";
+import { useParams } from "react-router-dom";
+
+export const DeleteElement = () => {
+	const dispatch = useDispatch();
+	const { id } = useParams<{ id: string }>();
+
+	const selectedElements = useSelector(
+		(state: RootState) => state.generator.selectedElements
+	);
+
+	const handleDelete = useCallback(() => {
+		if (id && selectedElements.length > 0) {
+			deleteProjectItemsApi(id, selectedElements);
+			dispatch(deleteElement(selectedElements));
+		}
+	}, [selectedElements, id, dispatch]);
+
+	return (
+		<button onClick={handleDelete} className="cursor-pointer">
+			<Icon type="trash" className="text-lg text-fire" />
+		</button>
+	);
+};

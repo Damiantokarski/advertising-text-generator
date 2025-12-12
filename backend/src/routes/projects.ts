@@ -1,11 +1,18 @@
 import express from "express";
-import { createProjectService, getProjectsService } from "../modules/project/service";
+import {
+	createProjectService,
+	deleteProjectItemsService,
+	getProject,
+	getProjectsService,
+	updateProjectService,
+} from "../modules/project/service";
 import { HttpError } from "../lib/errors";
 
 const router = express.Router();
 
 router.post("/create", async (req, res) => {
 	try {
+		console.log("Request body:", req.body);
 		const project = await createProjectService(req.body);
 		res.status(201).json(project);
 	} catch (e: any) {
@@ -14,7 +21,9 @@ router.post("/create", async (req, res) => {
 				.status(e.status)
 				.json({ error: e.message, code: e.code, field: e.field });
 		}
-		res.status(500).json({ error: "Something went wrong while creating the project" });
+		res
+			.status(500)
+			.json({ error: "Something went wrong while creating the project" });
 	}
 });
 
@@ -59,6 +68,55 @@ router.get("/", async (req, res) => {
 		console.error("GET /api/projects error:", e);
 		res.status(500).json({
 			error: "Failed to fetch projects",
+			message: e?.message ?? String(e),
+		});
+	}
+});
+
+router.get("/:id", async (req, res) => {
+	try {
+		const id = req.params.id;
+		const project = await getProject(id);
+
+		if (!project) {
+			return res.status(404).json({ error: "Project not found" });
+		}
+
+		res.status(200).json(project);
+	} catch (e: any) {
+		console.error(`GET /api/projects/${req.params.id} error:`, e);
+		res.status(500).json({
+			error: "Failed to fetch project",
+			message: e?.message ?? String(e),
+		});
+	}
+});
+
+router.put("/:id/update", async (req, res) => {
+	try {
+		const id = req.params.id;
+		const { texts, templates } = req.body;
+		await updateProjectService(id, texts, templates);
+		res.status(200).json({ message: "Project updated successfully" });
+	} catch (e: any) {
+		console.error(`PUT /api/projects/${req.params.id}/update error:`, e);
+		res.status(500).json({
+			error: "Failed to update project",
+			message: e?.message ?? String(e),
+		});
+	}
+});
+
+router.delete("/:id/items/delete", async (req, res) => {
+	try {
+		const id = req.params.id;
+		const { selectedItems } = req.body;
+		await deleteProjectItemsService(id, selectedItems);
+		res.status(200).json({ message: "Selected items deleted successfully" });
+	} catch (e: any) {
+		console.error(`DELETE /api/projects/${req.params.id}/delete error:`, e);
+		res.status(500).json({
+			error: "Failed to delete selected items",
 			message: e?.message ?? String(e),
 		});
 	}
