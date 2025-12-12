@@ -1,3 +1,5 @@
+import { Icon } from "../../../../../ui/Icon";
+
 export interface SetScaleProps {
 	scale: number;
 	minScale?: number;
@@ -25,7 +27,7 @@ export const StageScale = ({
 				disabled={scale >= maxScale}
 				className="cursor-pointer text-secondary-light"
 			>
-				+
+				<Icon type="plus"/>
 			</button>
 			<span className="text-xs text-secondary-light">
 				{(scale * 100).toFixed(0)}%
@@ -35,7 +37,7 @@ export const StageScale = ({
 				disabled={scale <= minScale}
 				className="cursor-pointer w-fit text-secondary-light"
 			>
-				-
+				<Icon type="minus"/>
 			</button>
 		</div>
 	);

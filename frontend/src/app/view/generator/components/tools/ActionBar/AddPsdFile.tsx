@@ -17,7 +17,7 @@ export const AddPsdFile = () => {
 	return (
 		<div ref={ref} className="flex items-center">
 			<button onClick={showDropDown} className="cursor-pointer">
-				<Icon type="filetypePsd" className="text-secondary-light" />
+				<Icon type="psd" className="text-lg" />
 			</button>
 
 			{isOpen && (

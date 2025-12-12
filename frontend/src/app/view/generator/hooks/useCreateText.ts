@@ -5,9 +5,6 @@ import Konva from "konva";
 import { v4 as uuidv4 } from "uuid";
 import { setNewTextObject } from "../../../store/slices/generator";
 
-
-
-
 export interface TextLayerData {
 	type: "text";
 	locked: boolean;
@@ -15,6 +12,7 @@ export interface TextLayerData {
 	value: {
 		text: string;
 		size: { width: number; height: number };
+		underline: boolean;
 		typography: {
 			align: string;
 			fontFamily: string;
@@ -47,11 +45,9 @@ export function useCreateText() {
 			};
 
 			const centerX =
-				Math.floor(windowWidth / 2 - stage.x() - size.width / 2) /
-				stage.scaleX();
+				Math.floor(windowWidth / 2 - stage.x() - size.width / 2) / stage.scaleX();
 			const centerY =
-				Math.floor(windowHeight / 2 - stage.y() - size.height / 2) /
-				stage.scaleX();
+				Math.floor(windowHeight / 2 - stage.y() - size.height / 2) / stage.scaleX();
 
 			const newText = {
 				id: `Text-${uuidv4()}`,
@@ -65,6 +61,7 @@ export function useCreateText() {
 						x: centerX + 40,
 						y: centerY,
 					},
+					underline: overrides?.value?.underline ?? false,
 					size,
 					typography: {
 						align: overrides?.value?.typography?.align ?? "left",

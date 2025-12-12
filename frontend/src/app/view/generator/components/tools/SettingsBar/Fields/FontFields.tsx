@@ -1,5 +1,4 @@
-import { useCallback, useMemo } from "react";
-import type React from "react";
+import { useCallback, useMemo, type ChangeEvent } from "react";
 import { useUpdateText } from "../../../../hooks/useActiveCanvas";
 import { FieldWrapper } from "../../../../../../ui/FieldWrapper";
 import { Select } from "../../../../../../ui/Select/Select";
@@ -121,7 +120,7 @@ export const FontFields = () => {
 	);
 
 	const handleFontSizeChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
+		(e: ChangeEvent<HTMLInputElement>) => {
 			if (!value) return;
 
 			updateValue({
@@ -156,7 +155,7 @@ export const FontFields = () => {
 				<Input
 					type="number"
 					step={0.5}
-					inputPrefix={<Icon type="textSize" />}
+					inputPrefix={<Icon type="textSize" className="text-xs" />}
 					value={value?.typography?.fontSize ?? 0}
 					onChange={handleFontSizeChange}
 					disabled={disabled}

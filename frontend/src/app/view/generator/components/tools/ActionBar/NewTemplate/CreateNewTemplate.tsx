@@ -15,7 +15,7 @@ export const CreateNewTemplate = () => {
 	return (
 		<div ref={ref} className="flex items-center">
 			<button onClick={showDropDown} className="cursor-pointer">
-				<Icon type="rectangle" className="text-secondary-light" />
+				<Icon type="rectangle" className="text-lg" />
 			</button>
 
 			{isOpen && <NewTemplateForm onHideForm={showDropDown} />}

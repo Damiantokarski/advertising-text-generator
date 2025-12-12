@@ -1,62 +1,102 @@
-import React, { type JSX, memo } from "react";
+import { memo, type SVGProps } from "react";
+import type { IconType as ReactIconComponent } from "react-icons";
 import {
-	PiTextAlignLeft,
-	PiTextAlignRight,
-	PiTextAlignCenter,
-	PiTextAlignJustify,
-	PiCaretDown,
-	PiCaretLeft,
-	PiCaretRight,
-	PiCaretUp,
-	PiX,
-	PiTextT,
-	PiAngle,
-	PiArrowsOutLineVertical,
-	PiArrowsOutLineHorizontal,
-	PiArrowsInLineHorizontal,
-	PiArrowsInLineVertical,
-	PiArrowClockwiseFill,
-	PiCaretDownFill,
-	PiMagnifyingGlass,
-	PiRectangle,
-	PiEye,
-	PiEyeClosed,
-	PiDotsThreeBold,
-	PiWarningDiamond,
-	PiXCircle,
-	PiSealCheck,
-	PiQuestion,
-	PiSwap,
-	PiArrowsIn,
-	PiFrameCorners,
-	PiGearSix,
-	PiSignOut,
-	PiFileMagnifyingGlass,
-	PiTrashSimple,
-	PiListBullets,
-	PiCheckBold,
-	PiArrowsClockwise,
-	PiPlusBold,
-	PiFileArrowUpDuotone,
-	PiNotePencil,
-	PiCloudArrowDown,
-	PiFloppyDisk,
-} from "react-icons/pi";
-import { TbTextSize } from "react-icons/tb";
-import { RxLockClosed, RxLockOpen1 } from "react-icons/rx";
-import { BsFiletypePsd, BsFileEarmarkFont } from "react-icons/bs";
+	// wyrównanie tekstu
+	TbAlignCenter,
+	TbAlignJustified,
+	TbAlignLeft,
+	TbAlignRight,
+
+	// strzałki wypełnione
+	TbCaretDownFilled,
+	TbCaretLeftFilled,
+	TbCaretRightFilled,
+	TbCaretUpFilled,
+
+	// obracanie i przekształcanie
+	TbFlipHorizontal,
+	TbFlipVertical,
+	TbLetterSpacing,
+	TbLineHeight,
+	TbRotate,
+	TbChartPpf,
+
+	// wielkość tekstu
+	TbH1,
+	TbH2,
+	TbH3,
+	TbH4,
+	TbH5,
+	TbH6,
+	TbTextSize,
+	TbUnderline,
+
+	//
+	TbLetterT,
+	TbLetterH,
+	TbLetterW,
+	TbLetterX,
+	TbLetterY,
+
+	// trmplate
+	TbCrop11,
+	TbSquares,
+
+	// index
+	TbStackPop,
+	TbStackPush,
+
+	// udostępnianie linku
+	TbLink,
+	TbBrandAdobePhotoshop,
+
+	// zamukanie/wylogowanie
+	TbLogout,
+
+	// kolory
+	TbPalette,
+
+	// widoczność
+	TbEye,
+	TbEyeClosed,
+	TbLock,
+	TbLockOpen,
+
+	//edycja
+	TbPencil,
+	TbTrash,
+	TbUpload,
+	TbX,
+	TbZoom,
+	TbPlus,
+	TbMinus,
+	TbCloudDown,
+
+	// mode
+	TbSunHigh,
+	TbMoon,
+	TbDownload,
+	TbHomeMove,
+} from "react-icons/tb";
 
 const IconType = {
 	TextLeft: "textLeft",
 	TextRight: "textRight",
 	TextCenter: "textCenter",
 	TextJustify: "textJustify",
+	Width: "width",
+	Height: "height",
+	XPos: "xPos",
+	YPos: "yPos",
+	Palette: "palette",
+
 	ArrowDown: "arrowDown",
 	ArrowLeft: "arrowLeft",
 	ArrowRight: "arrowRight",
 	ArrowUp: "arrowUp",
 	Close: "close",
 	Text: "text",
+	TextUnderline: "textUnderline",
 	Angle: "angle",
 	LineHeight: "lineHeight",
 	LetterSpacing: "letterSpacing",
@@ -64,7 +104,6 @@ const IconType = {
 	FlipHorizontal: "flipHorizontal",
 	FlipVertical: "flipVertical",
 	Rotate: "rotate",
-	CaretDownFill: "caretDownFill",
 	MagnifyingGlass: "magnifyingGlass",
 	Rectangle: "rectangle",
 	LockClosed: "lockClosed",
@@ -72,103 +111,106 @@ const IconType = {
 	Trash: "trash",
 	Eye: "eye",
 	EyeClosed: "eyeClosed",
-	FiletypePsd: "filetypePsd",
-	FileEarmarkFont: "fileEarmarkFont",
-	DotsThreeBold: "dotsThreeBold",
-	AlertWarning: "alertWarning",
-	AlertError: "alertError",
-	AlertSuccess: "alertSuccess",
-	AlertInfo: "alertInfo",
-	Swap: "swap",
-	ArrowsIn: "arrowsIn",
-	FrameCorners: "frameCorners",
-	Gear: "gear",
-	SignOut: "signOut",
-	FileMagnifyingGlass: "fileMagnifyingGlass",
-	ListBullets: "listBullets",
-	Check: "check",
-	Clockwise: "clockwise",
+	Psd: "psd",
+	Pencil: "pencil",
+	Save: "save",
 	Plus: "plus",
-	FileArrowUpDuotone: "fileArrowUpDuotone",
-	NotePencil: "notePencil",
-	CloudArrowDown: "cloudArrowDown",
-	FloppyDisk: "floppyDisk",
+	Minus: "minus",
+	Clockwise: "clockwise",
+
+	Header1: "header1",
+	Header2: "header2",
+	Header3: "header3",
+	Header4: "header4",
+	Header5: "header5",
+	Header6: "header6",
+
+	StackPop: "stackPop",
+	StackPush: "stackPush",
+
+	Link: "link",
+	Copy: "copy",
+	CloudDown: "cloudArrowDown",
+
+	SunHigh: "sunHigh",
+	Moon: "moon",
+	HomeMove: "homeMove",
 };
 
 export type IconType = (typeof IconType)[keyof typeof IconType];
 
-interface IconProps extends React.SVGProps<SVGElement> {
+interface IconProps extends SVGProps<SVGElement> {
 	type: IconType;
 }
+const ICON_MAP: Record<IconType, ReactIconComponent> = {
+	[IconType.TextLeft]: TbAlignLeft,
+	[IconType.TextRight]: TbAlignRight,
+	[IconType.TextCenter]: TbAlignCenter,
+	[IconType.TextJustify]: TbAlignJustified,
 
-const ICON_MAP: Record<IconType, JSX.Element> = {
-	// generator
-	[IconType.TextLeft]: <PiTextAlignLeft />,
-	[IconType.TextRight]: <PiTextAlignRight />,
-	[IconType.TextCenter]: <PiTextAlignCenter />,
-	[IconType.TextJustify]: <PiTextAlignJustify />,
+	[IconType.ArrowDown]: TbCaretDownFilled,
+	[IconType.ArrowLeft]: TbCaretLeftFilled,
+	[IconType.ArrowRight]: TbCaretRightFilled,
+	[IconType.ArrowUp]: TbCaretUpFilled,
 
-	[IconType.FlipHorizontal]: <PiArrowsInLineHorizontal />,
-	[IconType.FlipVertical]: <PiArrowsInLineVertical />,
-	[IconType.LineHeight]: <PiArrowsOutLineVertical />,
-	[IconType.LetterSpacing]: <PiArrowsOutLineHorizontal />,
-	[IconType.TextSize]: <TbTextSize />,
-	[IconType.Rotate]: <PiArrowClockwiseFill />,
-	[IconType.Angle]: <PiAngle />,
-	[IconType.Text]: <PiTextT />,
-	[IconType.Rectangle]: <PiRectangle />,
+	[IconType.TextSize]: TbTextSize,
+	[IconType.Palette]: TbPalette,
 
-	// arrows
-	[IconType.ArrowDown]: <PiCaretDown />,
-	[IconType.ArrowLeft]: <PiCaretLeft />,
-	[IconType.ArrowRight]: <PiCaretRight />,
-	[IconType.ArrowUp]: <PiCaretUp />,
+	[IconType.Text]: TbLetterT,
+	[IconType.Width]: TbLetterW,
+	[IconType.Height]: TbLetterH,
+	[IconType.XPos]: TbLetterX,
+	[IconType.YPos]: TbLetterY,
+	[IconType.Rectangle]: TbCrop11,
 
-	// alerts
-	[IconType.AlertWarning]: <PiWarningDiamond />,
-	[IconType.AlertError]: <PiXCircle />,
-	[IconType.AlertSuccess]: <PiSealCheck />,
-	[IconType.AlertInfo]: <PiQuestion />,
-	[IconType.FiletypePsd]: <BsFiletypePsd />,
-	[IconType.FileEarmarkFont]: <BsFileEarmarkFont />,
-	[IconType.FileArrowUpDuotone]: <PiFileArrowUpDuotone />,
+	[IconType.Eye]: TbEye,
+	[IconType.EyeClosed]: TbEyeClosed,
+	[IconType.LockClosed]: TbLock,
+	[IconType.LockOpen]: TbLockOpen,
+	[IconType.Close]: TbX,
 
-	[IconType.LockClosed]: <RxLockClosed />,
-	[IconType.LockOpen]: <RxLockOpen1 />,
-	[IconType.Eye]: <PiEye />,
-	[IconType.EyeClosed]: <PiEyeClosed />,
+	[IconType.Trash]: TbTrash,
+	[IconType.Angle]: TbChartPpf,
 
-	// functionality
-	[IconType.Close]: <PiX />,
-	[IconType.Plus]: <PiPlusBold />,
-	[IconType.Trash]: <PiTrashSimple />,
-	[IconType.DotsThreeBold]: <PiDotsThreeBold />,
-	[IconType.MagnifyingGlass]: <PiMagnifyingGlass />,
-	[IconType.SignOut]: <PiSignOut />,
-	[IconType.Check]: <PiCheckBold />,
-	[IconType.Clockwise]: <PiArrowsClockwise />,
+	[IconType.FlipHorizontal]: TbFlipHorizontal,
+	[IconType.FlipVertical]: TbFlipVertical,
+	[IconType.Rotate]: TbRotate,
+	[IconType.LineHeight]: TbLineHeight,
+	[IconType.LetterSpacing]: TbLetterSpacing,
+	[IconType.Psd]: TbBrandAdobePhotoshop,
 
-	//menu icons
-	[IconType.FileMagnifyingGlass]: <PiFileMagnifyingGlass />,
-	[IconType.Swap]: <PiSwap />,
-	[IconType.Gear]: <PiGearSix />,
-	[IconType.ArrowsIn]: <PiArrowsIn />,
-	[IconType.ListBullets]: <PiListBullets />,
-	[IconType.CaretDownFill]: <PiCaretDownFill />,
-	[IconType.FrameCorners]: <PiFrameCorners />,
-	[IconType.NotePencil]: <PiNotePencil />,
-	[IconType.CloudArrowDown]: <PiCloudArrowDown />,
-	[IconType.FloppyDisk]: <PiFloppyDisk />,
+	[IconType.Save]: TbDownload,
+	[IconType.Pencil]: TbPencil,
+	[IconType.MagnifyingGlass]: TbZoom,
+	[IconType.Plus]: TbPlus,
+	[IconType.Minus]: TbMinus,
+
+	[IconType.Header1]: TbH1,
+	[IconType.Header2]: TbH2,
+	[IconType.Header3]: TbH3,
+	[IconType.Header4]: TbH4,
+	[IconType.Header5]: TbH5,
+	[IconType.Header6]: TbH6,
+	[IconType.TextUnderline]: TbUnderline,
+	[IconType.StackPop]: TbStackPop,
+	[IconType.StackPush]: TbStackPush,
+
+	[IconType.Link]: TbLink,
+	[IconType.Copy]: TbSquares,
+	[IconType.CloudDown]: TbCloudDown,
+
+	[IconType.SunHigh]: TbSunHigh,
+	[IconType.Moon]: TbMoon,
+	[IconType.HomeMove]: TbHomeMove,
 };
 
 const IconComponent = ({ type, ...rest }: IconProps) => {
-	const IconSvg = ICON_MAP[type] ?? null;
+	const IconSvg = ICON_MAP[type];
 	if (!IconSvg) {
 		console.warn(`Icon: Unknown icon type "${type}"`);
 		return null;
 	}
-
-	return React.cloneElement(IconSvg, { ...rest });
+	return <IconSvg {...rest} />;
 };
 
 export const Icon = memo(IconComponent);

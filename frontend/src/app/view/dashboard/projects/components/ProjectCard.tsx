@@ -52,7 +52,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
 			<div className="flex items-center gap-2">
 				<button onClick={() => console.log("edit")} className="cursor-pointer">
 					<div className="flex items-center gap-2 text-primary-blue">
-						<Icon type="notePencil" className="w-5 h-5 text-danger" />
+						<Icon type="pencil" className="w-5 h-5 text-danger" />
 					</div>
 				</button>
 

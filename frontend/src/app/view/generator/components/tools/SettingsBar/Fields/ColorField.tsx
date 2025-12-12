@@ -58,18 +58,17 @@ export const ColorField = () => {
 					onBlur={handleInputBlur}
 					inputSize="small"
 					inputPrefix={
-						<button
-							onClick={toggleColorPicker}
-							disabled={disabled}
-							className="w-4 h-4 rounded-sm cursor-pointer mr-1"
+						<div
 							style={{ backgroundColor: color }}
+							className="w-3 h-3 rounded-sm"
+							onClick={toggleColorPicker}
 						/>
 					}
 				/>
 			</div>
 
 			{isOpen && !disabled && (
-				<div className="fixed p-4 right-80 bg-surface -mt-8 rounded-lg shadow custom-layout border-2 border-primary-blue-sky">
+				<div className="fixed p-4 right-80 bg-surface -mt-8 rounded-lg shadow custom-layout ">
 					<HexAlphaColorPicker color={color} onChange={handleSelectColor} />
 				</div>
 			)}

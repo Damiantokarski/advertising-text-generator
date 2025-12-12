@@ -1,4 +1,6 @@
+import type { ChangeEvent } from "react";
 import { FieldWrapper } from "../../../../../../ui/FieldWrapper";
+import { Icon } from "../../../../../../ui/Icon";
 import { Input } from "../../../../../../ui/Input/Input";
 import { useUpdateText } from "../../../../hooks/useActiveCanvas";
 
@@ -8,7 +10,7 @@ export const SizeField = () => {
   const width = value?.size.width ?? 0;
   const height = value?.size.height ?? 0;
 
-  const onChangeWidth = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const onChangeWidth = (e: ChangeEvent<HTMLInputElement>) =>
     updateValue({
       size: {
         width: Number(e.target.value),
@@ -16,7 +18,7 @@ export const SizeField = () => {
       },
     });
 
-  const onChangeHeight = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeHeight = (e: ChangeEvent<HTMLInputElement>) => {
     updateValue({
       size: {
         width: Number(width),
@@ -28,7 +30,7 @@ export const SizeField = () => {
     <FieldWrapper title="Size" className="flex gap-3">
       <Input
         type="number"
-        inputPrefix={<span>W:</span>}
+        inputPrefix={<Icon type="width" className="text-xs" />}
         value={Math.floor(width)}
         onChange={onChangeWidth}
         disabled={disabled}
@@ -36,7 +38,7 @@ export const SizeField = () => {
       />
       <Input
         type="number"
-        inputPrefix={<span>H:</span>}
+        inputPrefix={<Icon type="height" className="text-xs" />}
         value={Math.floor(height)}
         onChange={onChangeHeight}
         disabled={disabled}

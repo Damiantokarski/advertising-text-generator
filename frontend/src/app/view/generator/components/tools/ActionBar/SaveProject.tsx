@@ -18,10 +18,7 @@ export const SaveProject = () => {
 
 	return (
 		<button onClick={handleSaveProjectElements} className="cursor-pointer">
-			<Icon
-				type="floppyDisk"
-				className="text-secondary-light text-lg text-primary-blue"
-			/>
+			<Icon type="save" className="text-lg" />
 		</button>
 	);
 };

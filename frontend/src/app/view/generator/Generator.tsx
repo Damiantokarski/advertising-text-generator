@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Konva from "konva";
 import { shallowEqual, useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
@@ -21,6 +21,7 @@ export const Generator = () => {
 	const { width, height } = useWindowSize();
 	const { stageScale, setStageScale } = useWheelZoom(stageRef);
 	const { projectJob, projectTitle } = useOnLoadProject(id || "");
+
 	const [barsState, setBarsState] = useState({
 		isSettingsBarOpen: false,
 		isItemsBarOpen: false,
@@ -39,11 +40,13 @@ export const Generator = () => {
 		shallowEqual
 	);
 	const selectedElements = useSelector(
-		(state: RootState) => state.generator.selectedElements[0]
+		(state: RootState) => state.generator.selectedElements
 	);
 
-	useStageKeyboard(selectedElements, id || "");
+	useStageKeyboard(selectedElements[0], id || "");
+
 	const { stageDragMove, stageDragEnd } = useStageDragSync(stageRef);
+
 	const {
 		isSelecting,
 		selectionRect,
@@ -51,6 +54,14 @@ export const Generator = () => {
 		stageMouseMove,
 		stageMouseUp,
 	} = useStageSelection(stageRef);
+
+	useEffect(() => {
+		if (selectedElements.length > 0) {
+			setBarsState((prev) => ({ ...prev, isSettingsBarOpen: true }));
+		} else {
+			setBarsState((prev) => ({ ...prev, isSettingsBarOpen: false }));
+		}
+	}, [selectedElements.length]);
 
 	return (
 		<div
@@ -75,12 +86,12 @@ export const Generator = () => {
 			/>
 
 			<div>
-				<SettingsBar
-					stageRef={stageRef}
-					setBarsState={setBarsState}
-					isOpen={barsState.isSettingsBarOpen}
+				<SettingsBar stageRef={stageRef} isOpen={barsState.isSettingsBarOpen} />
+				<ActionBar
+					scale={stageScale}
+					onChange={setStageScale}
+					barsState={barsState}
 				/>
-				<ActionBar scale={stageScale} onChange={setStageScale} barsState={barsState} />
 			</div>
 
 			<ItemsBar

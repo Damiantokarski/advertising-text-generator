@@ -20,7 +20,7 @@ export const SelectButton = ({
 			type="button"
 			onClick={onClick}
 			disabled={disabled}
-			className={`flex justify-start px-2 py-2 rounded w-full bg-surface border border-primary-blue text-black text-tiny disabled:opacity-60 ${small ? "text-xs py-1" : "min-h-10"}`}
+			className={`flex justify-start px-2 py-2 rounded w-full bg-surface border border-primary-blue text-black text-tiny disabled:border-gray-200 disabled:text-gray-200 ${small ? "text-xs py-1" : "min-h-10"}`}
 		>
 			<div className="flex justify-between w-full items-center">
 				{value ? (
@@ -28,7 +28,7 @@ export const SelectButton = ({
 				) : (
 					<span className="text-gray-400">{placeholder}</span>
 				)}
-				<Icon type="arrowDown" className="text-tiny text-black" />
+				<Icon type="arrowDown" className="text-tiny" />
 			</div>
 		</button>
 	);

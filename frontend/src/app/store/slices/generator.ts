@@ -1,5 +1,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { deleteProjectApi, updateProjectApi } from "../../../api/projectsApi";
+import {
+	deleteProjectItemsApi,
+	updateProjectApi,
+} from "../../../api/projectsApi";
+import { v4 as uuidv4 } from "uuid";
 
 type Position = {
 	x: number;
@@ -31,12 +35,13 @@ type TextValue = {
 	rotation: number;
 	vertical: number;
 	horizontal: number;
+	underline: boolean;
 };
+
 type TemplateValue = {
 	name: string;
 	size: Size;
 	position: Position;
-
 	scale: number;
 };
 
@@ -63,6 +68,7 @@ export interface State {
 	scale: number;
 	stagePosition: { x: number; y: number };
 	selectedElements: string[];
+	copiedElements: string[];
 }
 
 const initialState: State = {
@@ -72,6 +78,7 @@ const initialState: State = {
 	scale: 1,
 	stagePosition: { x: 0, y: 0 },
 	selectedElements: [],
+	copiedElements: [],
 };
 
 const generator = createSlice({
@@ -98,9 +105,44 @@ const generator = createSlice({
 			action: PayloadAction<{ id: string; value: Text["value"] }>
 		) => {
 			const { id, value } = action.payload;
+
+			const allowed: Partial<Text["value"]> = {
+				typography: value.typography,
+				color: value.color,
+				underline: value.underline,
+
+				vertical: value.vertical,
+				horizontal: value.horizontal,
+
+				rotation: value.rotation,
+				size: value.size,
+			};
+
+			if (state.selectedElements.length > 1) {
+				state.selectedElements.forEach((elementId) => {
+					const txt = state.texts.find((t) => t.id === elementId);
+					if (!txt) return;
+
+					txt.value = {
+						...txt.value,
+						...allowed,
+						typography: allowed.typography
+							? { ...txt.value.typography, ...allowed.typography }
+							: txt.value.typography,
+					};
+				});
+				return;
+			}
+
 			const txt = state.texts.find((t) => t.id === id);
 			if (txt) {
-				txt.value = value;
+				txt.value = {
+					...txt.value,
+					...allowed,
+					typography: allowed.typography
+						? { ...txt.value.typography, ...allowed.typography }
+						: txt.value.typography,
+				};
 			}
 		},
 
@@ -282,7 +324,7 @@ const generator = createSlice({
 
 		deleteProjectItems: (state, action: PayloadAction<{ id: string }>) => {
 			const { id } = action.payload;
-			deleteProjectApi(id, state.selectedElements);
+			deleteProjectItemsApi(id, state.selectedElements);
 			state.texts = state.texts.filter(
 				(item) => !state.selectedElements.includes(item.id)
 			);
@@ -299,6 +341,141 @@ const generator = createSlice({
 				...state.templates.map((template) => template.id),
 			];
 			state.selectedElements = allElementIds;
+		},
+		lockElements: (state) => {
+			state.selectedElements.forEach((id) => {
+				const text = state.texts.find((t) => t.id === id);
+				if (text) {
+					text.locked = true;
+					return;
+				}
+				const template = state.templates.find((t) => t.id === id);
+				if (template) {
+					template.locked = true;
+				}
+			});
+		},
+		updateActiveTextStyle: (state, action: PayloadAction<number>) => {
+			const fontSize = action.payload;
+
+			state.texts.forEach((text) => {
+				if (state.selectedElements.includes(text.id)) {
+					text.value.typography.fontSize = fontSize;
+				}
+			});
+		},
+		setCanvaIndex(state, action: PayloadAction<number>) {
+			const dir = Math.sign(action.payload);
+			if (!dir) return;
+
+			const selected = new Set(state.selectedElements);
+
+			if (dir > 0) {
+				// move "down" in array (index + 1) — iteruj od końca
+				for (let i = state.texts.length - 2; i >= 0; i--) {
+					if (
+						selected.has(state.texts[i].id) &&
+						!selected.has(state.texts[i + 1].id)
+					) {
+						[state.texts[i], state.texts[i + 1]] = [
+							state.texts[i + 1],
+							state.texts[i],
+						];
+					}
+				}
+			} else {
+				for (let i = 1; i < state.texts.length; i++) {
+					if (
+						selected.has(state.texts[i].id) &&
+						!selected.has(state.texts[i - 1].id)
+					) {
+						[state.texts[i], state.texts[i - 1]] = [
+							state.texts[i - 1],
+							state.texts[i],
+						];
+					}
+				}
+			}
+		},
+
+		copyElements: (state) => {
+			state.copiedElements = [...state.selectedElements];
+		},
+
+		pasteElements: (state) => {
+			const newTexts: Text[] = [];
+			const newTemplates: Template[] = [];
+			const idMap: Record<string, string> = {};
+
+			state.copiedElements.forEach((id) => {
+				const text = state.texts.find((t) => t.id === id);
+				if (text) {
+					const newId = `Text-${uuidv4()}`;
+					idMap[id] = newId;
+					newTexts.push({
+						...text,
+						id: newId,
+						value: {
+							...text.value,
+							position: {
+								x: text.value.position.x + 10,
+								y: text.value.position.y + 10,
+							},
+						},
+					});
+					return;
+				}
+				const template = state.templates.find((t) => t.id === id);
+				if (template) {
+					const newId = `Template-${uuidv4()}`;
+					idMap[id] = newId;
+					newTemplates.push({
+						...template,
+						id: newId,
+						value: {
+							...template.value,
+							position: {
+								x: template.value.position.x + 10,
+								y: template.value.position.y + 10,
+							},
+						},
+					});
+				}
+			});
+
+			state.texts.push(...newTexts);
+			state.templates.push(...newTemplates);
+			state.selectedElements = Object.values(idMap);
+		},
+
+		setUnderline: (state) => {
+			state.texts.forEach((text) => {
+				if (state.selectedElements.includes(text.id)) {
+					text.value.underline = !text.value.underline;
+				}
+			});
+		},
+
+		moveSelectedElements: (
+			state,
+			action: PayloadAction<{ dx: number; dy: number }>
+		) => {
+			const { dx, dy } = action.payload;
+
+			state.selectedElements.forEach((id) => {
+				const txt = state.texts.find((x) => x.id === id);
+				if (txt) {
+					txt.value.position.x += dx;
+					txt.value.position.y += dy;
+					return;
+				}
+
+				const tpl = state.templates.find((t) => t.id === id);
+				if (tpl) {
+					tpl.value.position.x += dx;
+					tpl.value.position.y += dy;
+				}
+			});
 		},
 	},
 });
@@ -326,5 +503,12 @@ export const {
 	saveProject,
 	deleteProjectItems,
 	selectAllElements,
+	lockElements,
+	updateActiveTextStyle,
+	setCanvaIndex,
+	copyElements,
+	pasteElements,
+	setUnderline,
+	moveSelectedElements,
 } = generator.actions;
 export default generator.reducer;

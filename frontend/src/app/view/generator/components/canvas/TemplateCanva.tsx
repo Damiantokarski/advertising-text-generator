@@ -14,70 +14,75 @@ import { useSnapElements } from "../../hooks/useSnapElements";
 interface TemplateCanvaProps {
 	templateObj: Template;
 	stageRef: RefObject<Konva.Stage | null>;
+	dragOffset?: { dx: number; dy: number };
 }
 
-export const TemplateCanva = memo(({ templateObj, stageRef }: TemplateCanvaProps) => {
-	const dispatch = useDispatch<AppDispatch>();
+export const TemplateCanva = memo(
+	({ templateObj, stageRef, dragOffset }: TemplateCanvaProps) => {
+		const dispatch = useDispatch<AppDispatch>();
 
-	const { value, locked, display } = templateObj;
+		const { value, locked, display } = templateObj;
 
-	const selectedElements = useSelector(
-		(state: RootState) => state.generator.selectedElements
-	);
+		const selectedElements = useSelector(
+			(state: RootState) => state.generator.selectedElements
+		);
+		const isMultiSelected = selectedElements.length > 1;
+		const isSelected = selectedElements.includes(templateObj.id);
+		const dx = isSelected ? (dragOffset?.dx ?? 0) : 0;
+		const dy = isSelected ? (dragOffset?.dy ?? 0) : 0;
 
-	const snapElements = useSnapElements();
+		const snapElements = useSnapElements();
 
-	const isSelected = selectedElements.includes(templateObj.id);
-	const stroke = isSelected ? "#0c8ce9" : "#b1b1b1";
+		const stroke = isSelected && !isMultiSelected ? "#0c8ce9" : "#b1b1b1";
 
-	const { scale, size, position, name } = value;
-	const width = size.width * scale;
-	const height = size.height * scale;
-	const positionX = position.x;
-	const positionY = position.y;
-	const textY = -16 * scale;
-	const fontSize = 12 * scale;
+		const { scale, size, position, name } = value;
+		const width = size.width * scale;
+		const height = size.height * scale;
+		const positionX = position.x;
+		const positionY = position.y;
+		const textY = -16 * scale;
+		const fontSize = 12 * scale;
 
-	const setActiveBanner = useCallback(() => {
-		if (locked) return;
-		dispatch(setSelectedElements([templateObj.id]));
-	}, [templateObj.id, dispatch, locked]);
-
-	const dragEnd = useCallback(
-		(e: Konva.KonvaEventObject<DragEvent>) => {
+		const setActiveBanner = useCallback(() => {
 			if (locked) return;
+			dispatch(setSelectedElements([templateObj.id]));
+		}, [templateObj.id, dispatch, locked]);
 
-			dispatch(
-				updateTemplatePosition({
-					id: templateObj.id,
-					x: e.target.x(),
-					y: e.target.y(),
-				})
-			);
-		},
-		[templateObj.id, dispatch, locked]
-	);
+		const dragEnd = useCallback(
+			(e: Konva.KonvaEventObject<DragEvent>) => {
+				if (locked) return;
 
-	const dragBoundFunc = useCallback(
+				dispatch(
+					updateTemplatePosition({
+						id: templateObj.id,
+						x: e.target.x(),
+						y: e.target.y(),
+					})
+				);
+			},
+			[templateObj.id, dispatch, locked]
+		);
+
+		const dragBoundFunc = useCallback(
 			(pos: Konva.Vector2d) => {
 				const stage = stageRef.current;
 				if (!stage) return pos;
-	
+
 				const scale = stage.scaleX() || 1;
-	
+
 				const stagePos = stage.position();
-	
+
 				const logicalPos = {
 					x: (pos.x - stagePos.x) / scale,
 					y: (pos.y - stagePos.y) / scale,
 				};
-	
+
 				const snappedLogical = snapLinesPosition(
 					templateObj.id,
 					snapElements,
 					logicalPos
 				);
-	
+
 				return {
 					x: snappedLogical.x * scale + stagePos.x,
 					y: snappedLogical.y * scale + stagePos.y,
@@ -86,27 +91,28 @@ export const TemplateCanva = memo(({ templateObj, stageRef }: TemplateCanvaProps
 			[snapElements, templateObj.id, stageRef]
 		);
 
-	return (
-		<Group
-			id={templateObj.id}
-			name="selectable"
-			x={positionX}
-			y={positionY}
-			draggable={!locked}
-			onClick={setActiveBanner}
-			onDragEnd={dragEnd}
-			visible={display}
-			dragBoundFunc={dragBoundFunc}
-		>
-			<Rect
-				width={width}
-				height={height}
-				stroke={stroke}
-				strokeWidth={1}
-				fill="#ffffff"
-			/>
+		return (
+			<Group
+				id={templateObj.id}
+				name="selectable"
+				x={positionX + dx}
+				y={positionY + dy}
+				draggable={!locked}
+				onClick={setActiveBanner}
+				onDragEnd={dragEnd}
+				visible={display}
+				dragBoundFunc={dragBoundFunc}
+			>
+				<Rect
+					width={width}
+					height={height}
+					stroke={stroke}
+					strokeWidth={1}
+					fill="#ffffff"
+				/>
 
-			<KonvaText text={name} x={0} y={textY} fontSize={fontSize} fill="#a1a1a1" />
-		</Group>
-	);
-});
+				<KonvaText text={name} x={0} y={textY} fontSize={fontSize} fill="#a1a1a1" />
+			</Group>
+		);
+	}
+);

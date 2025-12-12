@@ -2,8 +2,11 @@
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../../store/store";
 import {
+	copyElements,
 	deleteProjectItems,
+	lockElements,
 	moveCanvas,
+	pasteElements,
 	saveProject,
 	selectAllElements,
 } from "../../../store/slices/generator";
@@ -59,6 +62,15 @@ export const useStageKeyboard = (
 		},
 		"Ctrl+A": () => {
 			dispatch(selectAllElements());
+		},
+		"Ctrl+L": () => {
+			dispatch(lockElements());
+		},
+		"Ctrl+C": () => {
+			dispatch(copyElements());
+		},
+		"Ctrl+V": () => {
+			dispatch(pasteElements());
 		},
 	});
 };

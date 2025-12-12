@@ -1,9 +1,14 @@
+import { Link } from "react-router-dom";
 import { AddPsdFile } from "./AddPsdFile";
+import { CanvaIndex } from "./CanvaIndex";
 import { CreateNewText } from "./CreateNewText";
 import { DeleteElement } from "./DeleteElement";
+import { Headers } from "./Headers";
 import { CreateNewTemplate } from "./NewTemplate/CreateNewTemplate";
 import { SaveProject } from "./SaveProject";
 import { StageScale } from "./StageScale";
+import { Underline } from "./Underline";
+import { Icon } from "../../../../../ui/Icon";
 
 export interface ToolsProps {
 	scale: number;
@@ -34,9 +39,17 @@ export const ActionBar = ({ scale, onChange, barsState }: ToolsProps) => {
 		<section
 			className={`fixed top-0 flex  items-center justify-between gap-4 p-4 shadow  bg-surface m-4 rounded-sm w-full  transition-all ${left} ${maxWidth}`}
 		>
-			<div className="flex items-center gap-4 justify-center">
-				<CreateNewText />
+			<div className="flex items-center gap-10 justify-center">
+				<Link to="/" className="cursor-pointer">
+					<Icon type="homeMove" className="text-lg " />
+				</Link>
+				<div className="flex gap-4 items-center">
+					<CreateNewText />
+					<Underline />
+				</div>
+				<Headers />
 				<CreateNewTemplate />
+				<CanvaIndex />
 				<AddPsdFile />
 				<div className="flex gap-4 items-center justify-center">
 					<SaveProject />

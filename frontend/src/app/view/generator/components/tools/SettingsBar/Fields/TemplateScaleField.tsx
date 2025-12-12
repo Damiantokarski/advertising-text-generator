@@ -1,6 +1,8 @@
+import { useSelector } from "react-redux";
 import { FieldWrapper } from "../../../../../../ui/FieldWrapper";
 import { Select } from "../../../../../../ui/Select/Select";
 import { useUpdateTemplate } from "../../../../hooks/useActiveCanvas";
+import type { RootState } from "../../../../../../store/store";
 
 const scales = [
 	{ key: "1-xs", label: "0.5x", value: 0.5 },
@@ -15,6 +17,10 @@ const scales = [
 
 export const TemplateScaleField = () => {
 	const { value, updateValue, disabled } = useUpdateTemplate();
+
+	const selectedElements = useSelector(
+		(state: RootState) => state.generator.selectedElements
+	);
 
 	const currentScaleValue = value?.scale || 1;
 
@@ -37,7 +43,7 @@ export const TemplateScaleField = () => {
 				optionsList={optionsList}
 				defaultValue={selectedLabel}
 				onChange={handleChange}
-				disabled={disabled}
+				disabled={disabled || selectedElements.length > 1}
 				small
 			/>
 		</FieldWrapper>

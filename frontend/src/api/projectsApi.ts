@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import type { Template, Text } from "../app/store/slices/generator";
 
 export interface CreateProjectPayload {
@@ -16,8 +17,13 @@ export const createProjectApi = async (data: CreateProjectPayload) => {
 		body: JSON.stringify(data),
 	});
 
-	if (!res.ok) throw new Error(`Failed to create Project: ${res.statusText}`);
-	return res.json();
+	if (res.ok) {
+		toast.success("Project created successfully");
+		return res.json();
+	} else {
+		toast.error("Failed to create project");
+		throw new Error(`Failed to create Project: ${res.statusText}`);
+	}
 };
 
 export interface GetProjectsPayload {
@@ -60,17 +66,33 @@ export const updateProjectApi = async (
 		body: JSON.stringify({ texts, templates }),
 	});
 
-	if (!res.ok) throw new Error(`Failed to update Project: ${res.statusText}`);
+	if (res.ok) {
+		toast.success("Project saved successfully");
+	} else {
+		toast.error("Failed to save project");
+		throw new Error(`Failed to update Project: ${res.statusText}`);
+	}
 };
 
-export const deleteProjectApi = async (id: string, selectedItems: string[]) => {
-	const res = await fetch(`http://localhost:4000/api/projects/${id}/items/delete`, {
-		method: "DELETE",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ selectedItems }),
-	});
+export const deleteProjectItemsApi = async (
+	id: string,
+	selectedItems: string[]
+) => {
+	const res = await fetch(
+		`http://localhost:4000/api/projects/${id}/items/delete`,
+		{
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ selectedItems }),
+		}
+	);
 
-	if (!res.ok) throw new Error(`Failed to delete Project: ${res.statusText}`);
+	if (res.ok) {
+		toast.success("Project items deleted successfully");
+	} else {
+		toast.error("Failed to delete project items");
+		throw new Error(`Failed to delete Project items: ${res.statusText}`);
+	}
 };

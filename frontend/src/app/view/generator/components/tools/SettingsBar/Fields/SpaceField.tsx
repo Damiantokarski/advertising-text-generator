@@ -1,3 +1,4 @@
+import type { ChangeEvent } from "react";
 import { FieldWrapper } from "../../../../../../ui/FieldWrapper";
 import { Icon } from "../../../../../../ui/Icon";
 import { Input } from "../../../../../../ui/Input/Input";
@@ -8,7 +9,7 @@ export const SpaceField = () => {
 	const lineHeight = value?.typography.lineHeight ?? 0;
 	const letterSpacing = value?.typography.letterSpacing ?? 0;
 
-	const onChangeLH = (e: React.ChangeEvent<HTMLInputElement>) =>
+	const onChangeLH = (e: ChangeEvent<HTMLInputElement>) =>
 		updateValue({
 			typography: {
 				...value!.typography,
@@ -16,7 +17,7 @@ export const SpaceField = () => {
 			},
 		});
 
-	const onChangeLS = (e: React.ChangeEvent<HTMLInputElement>) =>
+	const onChangeLS = (e: ChangeEvent<HTMLInputElement>) =>
 		updateValue({
 			typography: {
 				...value!.typography,
@@ -29,7 +30,7 @@ export const SpaceField = () => {
 			<Input
 				type="number"
 				step={0.1}
-				inputPrefix={<Icon type="lineHeight" />}
+				inputPrefix={<Icon type="lineHeight" className="text-xs"  />}
 				value={lineHeight.toString()}
 				onChange={onChangeLH}
 				disabled={disabled}
@@ -38,7 +39,7 @@ export const SpaceField = () => {
 			<Input
 				type="number"
 				step={0.1}
-				inputPrefix={<Icon type="letterSpacing" />}
+				inputPrefix={<Icon type="letterSpacing" className="text-xs" />}
 				value={letterSpacing.toString()}
 				onChange={onChangeLS}
 				disabled={disabled}

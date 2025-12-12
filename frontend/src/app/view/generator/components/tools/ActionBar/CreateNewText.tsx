@@ -6,7 +6,7 @@ export const CreateNewText = () => {
 
 	return (
 		<button onClick={() => addText()} className="cursor-pointer">
-			<Icon type="text" className="text-secondary-light text-lg" />
+			<Icon type="text" className="text-lg" />
 		</button>
 	);
 };

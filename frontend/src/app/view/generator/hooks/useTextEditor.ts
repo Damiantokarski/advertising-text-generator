@@ -27,7 +27,15 @@ export function useTextEditor(
 		if (!stage || !node || typeof window === "undefined") return;
 
 		const {
-			value: { text, typography, color, rotation, horizontal, vertical },
+			value: {
+				text,
+				typography,
+				color,
+				rotation,
+				horizontal,
+				vertical,
+				underline,
+			},
 		} = textObj;
 
 		const absPos = node.getAbsolutePosition();
@@ -61,6 +69,7 @@ export function useTextEditor(
 			background: "transparent",
 			outline: "none",
 			resize: "none",
+			textDecoration: underline ? "underline" : "none",
 			color,
 			lineHeight: typography.lineHeight.toString(),
 			letterSpacing: `${typography.letterSpacing}px`,

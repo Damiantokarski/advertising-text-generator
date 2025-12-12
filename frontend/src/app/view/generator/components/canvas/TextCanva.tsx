@@ -19,6 +19,7 @@ import { useTextTransformHandlers } from "../../hooks/useTextTransformHandlers";
 interface TextCanvaProps {
 	textObj: Text;
 	stageRef: RefObject<Konva.Stage | null>;
+	dragOffset?: { dx: number; dy: number };
 }
 
 const ANCHORS = [
@@ -32,13 +33,19 @@ const ANCHORS = [
 	"middle-left",
 ];
 
-const TextCanvaComponent = ({ textObj, stageRef }: TextCanvaProps) => {
+const TextCanvaComponent = ({
+	textObj,
+	stageRef,
+	dragOffset,
+}: TextCanvaProps) => {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const selectedElements = useSelector(
 		(state: RootState) => state.generator.selectedElements
 	);
 	const isSelected = selectedElements.includes(textObj.id);
+	const dx = isSelected ? (dragOffset?.dx ?? 0) : 0;
+	const dy = isSelected ? (dragOffset?.dy ?? 0) : 0;
 
 	const textRef = useRef<Konva.Text>(null);
 	const groupRef = useRef<Konva.Group>(null);
@@ -46,6 +53,7 @@ const TextCanvaComponent = ({ textObj, stageRef }: TextCanvaProps) => {
 
 	const {
 		value: {
+			underline,
 			position: { x, y },
 			horizontal,
 			vertical,
@@ -120,17 +128,19 @@ const TextCanvaComponent = ({ textObj, stageRef }: TextCanvaProps) => {
 		[snapElements, textObj.id, stageRef]
 	);
 
+	const isMultiSelected = selectedElements.length > 1;
+
 	return (
 		<>
 			<Group
 				id={textObj.id}
 				name="selectable"
 				ref={groupRef}
-				x={x}
-				y={y}
+				x={x + dx}
+				y={y + dy}
 				scaleX={horizontal}
 				scaleY={vertical}
-				draggable={!textObj.locked}
+				draggable={!textObj.locked && !isMultiSelected}
 				visible={textObj.display}
 				onClick={handleActiveText}
 				onDblClick={handleDblClick}
@@ -150,6 +160,7 @@ const TextCanvaComponent = ({ textObj, stageRef }: TextCanvaProps) => {
 					fontStyle={typography.fontWeight.value}
 					lineHeight={typography.lineHeight}
 					letterSpacing={typography.letterSpacing}
+					textDecoration={underline ? "underline" : ""}
 					align={typography.align}
 					onTransform={handleTransform}
 					onTransformEnd={handleTransformEnd}
@@ -165,7 +176,7 @@ const TextCanvaComponent = ({ textObj, stageRef }: TextCanvaProps) => {
 				)}
 			</Group>
 
-			{isSelected && !isEditing && !textObj.locked && (
+			{isSelected && !isEditing && !textObj.locked && !isMultiSelected && (
 				<Transformer
 					name="Transformer"
 					ref={trRef}

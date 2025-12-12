@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { Icon } from "../../../../../ui/Icon";
 import type { RootState } from "../../../../../store/store";
 import { deleteElement } from "../../../../../store/slices/generator";
-import { deleteProjectApi } from "../../../../../../api/projectsApi";
+import { deleteProjectItemsApi } from "../../../../../../api/projectsApi";
 import { useParams } from "react-router-dom";
 
 export const DeleteElement = () => {
@@ -16,14 +16,14 @@ export const DeleteElement = () => {
 
 	const handleDelete = useCallback(() => {
 		if (id && selectedElements.length > 0) {
-			deleteProjectApi(id, selectedElements);
+			deleteProjectItemsApi(id, selectedElements);
 			dispatch(deleteElement(selectedElements));
 		}
 	}, [selectedElements, id, dispatch]);
 
 	return (
 		<button onClick={handleDelete} className="cursor-pointer">
-			<Icon type="trash" className="text-secondary-light text-lg text-fire" />
+			<Icon type="trash" className="text-lg text-fire" />
 		</button>
 	);
 };

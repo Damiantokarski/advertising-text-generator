@@ -49,6 +49,7 @@ export const useOnLoadProject = (id: string) => {
 								text: txt.value.text,
 								position: txt.value.position,
 								size: txt.value.size,
+								underline: txt.value.underline ?? false,
 								typography: txt.value.typography,
 								color: txt.value.color ?? "#b1b1b1",
 								rotation: txt.value.rotation ?? 0,

@@ -34,7 +34,7 @@ export const NewTemplateForm = ({ onHideForm }: NewTemplateFormProps) => {
 	return (
 		<form
 			onSubmit={handleSubmit(onSubmit)}
-			className="flex flex-col gap-3 px-4 py-4 bg-surface shadow rounded-sm z-1000 fixed left-92 top-22 text-tiny "
+			className="flex flex-col gap-3 px-4 py-4 bg-surface shadow rounded-sm z-1000 fixed left-92 top-22 text-tiny"
 		>
 			<FieldWrapper title="Name" className="mb-2">
 				<Input type="string" {...register("name")} inputSize="small" placeholder="Box123" />
