@@ -9,6 +9,7 @@ import { SaveProject } from "./SaveProject";
 import { StageScale } from "./StageScale";
 import { Underline } from "./Underline";
 import { Icon } from "../../../../../ui/Icon";
+import { useAuth } from "../../../../../hooks/useAuth";
 
 export interface ToolsProps {
 	scale: number;
@@ -21,6 +22,7 @@ export interface ToolsProps {
 
 export const ActionBar = ({ scale, onChange, barsState }: ToolsProps) => {
 	const { isItemsBarOpen, isSettingsBarOpen } = barsState;
+	const { logout } = useAuth();
 
 	let maxWidth = "max-w-[calc(100%-113px)]";
 
@@ -43,6 +45,9 @@ export const ActionBar = ({ scale, onChange, barsState }: ToolsProps) => {
 				<Link to="/" className="cursor-pointer">
 					<Icon type="homeMove" className="text-lg " />
 				</Link>
+				<button onClick={logout} className="cursor-pointer">
+					<Icon type="logout" className="text-secondary-light text-lg" />
+				</button>
 				<div className="flex gap-4 items-center">
 					<CreateNewText />
 					<Underline />
@@ -56,6 +61,7 @@ export const ActionBar = ({ scale, onChange, barsState }: ToolsProps) => {
 					<DeleteElement />
 				</div>
 			</div>
+
 
 			<StageScale
 				scale={scale}

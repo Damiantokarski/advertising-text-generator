@@ -27,7 +27,7 @@ const getRelativePointerPosition = (stage: Konva.Stage | null) => {
 };
 
 export const useStageSelection = (
-  stageRef: RefObject<Konva.Stage | null>
+  _stageRef: RefObject<Konva.Stage | null>
 ) => {
   const dispatch = useDispatch<AppDispatch>();
 

@@ -50,7 +50,7 @@ import {
 	TbLink,
 	TbBrandAdobePhotoshop,
 
-	// zamukanie/wylogowanie
+	// zamykanie/wylogowanie
 	TbLogout,
 
 	// kolory
@@ -135,6 +135,8 @@ const IconType = {
 	SunHigh: "sunHigh",
 	Moon: "moon",
 	HomeMove: "homeMove",
+
+	Logout: "logout",
 };
 
 export type IconType = (typeof IconType)[keyof typeof IconType];
@@ -202,6 +204,8 @@ const ICON_MAP: Record<IconType, ReactIconComponent> = {
 	[IconType.SunHigh]: TbSunHigh,
 	[IconType.Moon]: TbMoon,
 	[IconType.HomeMove]: TbHomeMove,
+
+	[IconType.Logout]: TbLogout,
 };
 
 const IconComponent = ({ type, ...rest }: IconProps) => {
