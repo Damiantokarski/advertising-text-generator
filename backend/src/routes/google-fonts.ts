@@ -1,9 +1,13 @@
-import { getGoogleFonts } from "../modules/google-fonts/service";
 import express from "express";
+import { getGoogleFonts } from "../modules/google-fonts/service";
+import { requireAccessToken } from "../middleware/auth";
+import { AuthenticatedRequest } from "../lib/types";
 
 const router = express.Router();
 
-router.get("/", async (_req, res) => {
+router.use(requireAccessToken);
+
+router.get("/", async (req: AuthenticatedRequest, res) => {
   try {
     const fonts = await getGoogleFonts();
     res.json(fonts);

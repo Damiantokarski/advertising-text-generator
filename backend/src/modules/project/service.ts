@@ -1,6 +1,8 @@
 import { prisma } from "../../lib/prisma";
+import { TokenPayload } from "../../lib/types";
 
 export const getProjectsService = async (
+	user: TokenPayload,
 	page = 1,
 	pageSize = 10,
 	q?: string
@@ -9,8 +11,10 @@ export const getProjectsService = async (
 		const take = Math.max(1, pageSize);
 		const skip = Math.max(0, (Math.max(1, page) - 1) * take);
 
-		const where = q
-			? {
+		const where: any = {
+			userId: user.id,
+			...(q
+				? {
 					OR: [
 						{ name: { contains: q } },
 						{ job: { contains: q } },
@@ -18,7 +22,8 @@ export const getProjectsService = async (
 						{ projectId: { contains: q } },
 					],
 				}
-			: undefined;
+				: {}),
+		};
 
 		const [total, projects] = await prisma.$transaction([
 			prisma.project.count({ where }),
@@ -55,17 +60,20 @@ export const getProjectsService = async (
 	}
 };
 
-export const createProjectService = async (data: {
-	name: string;
-	task: string;
-	title: string;
-	priority: string;
-}) => {
+export const createProjectService = async (
+	user: TokenPayload,
+	data: {
+		name: string;
+		task: string;
+		title: string;
+		priority: string;
+	}
+) => {
 	try {
 		const { name, task, title, priority } = data;
 
 		const existingProject = await prisma.project.findFirst({
-			where: { job: task },
+			where: { job: task, userId: user.id },
 		});
 
 		if (existingProject) {
@@ -81,6 +89,7 @@ export const createProjectService = async (data: {
 				job: task,
 				title,
 				status: priority,
+				userId: user.id,
 			},
 		});
 		return { status: true, message: "Project created successfully" };
@@ -89,10 +98,10 @@ export const createProjectService = async (data: {
 	}
 };
 
-export const getProject = async (id: string) => {
+export const getProject = async (id: string, user: TokenPayload) => {
 	try {
 		const project = await prisma.project.findFirst({
-			where: { id },
+			where: { id, userId: user.id },
 			include: {
 				texts: true,
 				templates: true,
@@ -114,12 +123,21 @@ export const getProject = async (id: string) => {
 
 export const updateProjectService = async (
 	id: string,
+	user: TokenPayload,
 	texts: any[],
 	templates: any[]
 ) => {
 	try {
+		// Ensure project belongs to user
+		const owned = await prisma.project.findFirst({
+			where: { id, userId: user.id },
+		});
+		if (!owned) {
+			return { status: false, message: "Project not found" };
+		}
+
 		await prisma.project.update({
-			where: { id },
+			where: { id, userId: user.id },
 			data: {
 				texts: {
 					deleteMany: {},
@@ -148,9 +166,18 @@ export const updateProjectService = async (
 
 export const deleteProjectItemsService = async (
 	id: string,
+	user: TokenPayload,
 	selectedItems: string[]
 ) => {
 	try {
+		// Ensure project belongs to user
+		const owned = await prisma.project.findFirst({
+			where: { id, userId: user.id },
+		});
+		if (!owned) {
+			return { status: false, message: "Project not found" };
+		}
+
 		await prisma.$transaction([
 			prisma.text.deleteMany({
 				where: {

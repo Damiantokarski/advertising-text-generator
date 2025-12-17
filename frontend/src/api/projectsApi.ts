@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
 import type { Template, Text } from "../app/store/slices/generator";
+import { fetchProtected } from "./fetchProtected";
 
 export interface CreateProjectPayload {
 	name: string;
@@ -9,7 +10,7 @@ export interface CreateProjectPayload {
 }
 
 export const createProjectApi = async (data: CreateProjectPayload) => {
-	const res = await fetch(`http://localhost:4000/api/projects/create`, {
+	const res = await fetchProtected(`http://localhost:4000/api/projects/create`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -39,7 +40,7 @@ export const getProjectsApi = async (data: GetProjectsPayload) => {
 
 	if (data.q) params.set("q", data.q);
 
-	const res = await fetch(
+	const res = await fetchProtected(
 		`http://localhost:4000/api/projects?${params.toString()}`
 	);
 
@@ -48,7 +49,7 @@ export const getProjectsApi = async (data: GetProjectsPayload) => {
 };
 
 export const getProjectApi = async (id: string) => {
-	const res = await fetch(`http://localhost:4000/api/projects/${id}`);
+	const res = await fetchProtected(`http://localhost:4000/api/projects/${id}`);
 	if (!res.ok) throw new Error(`Failed to fetch Projects: ${res.statusText}`);
 	return res.json();
 };
@@ -58,7 +59,7 @@ export const updateProjectApi = async (
 	texts: Text[],
 	templates: Template[]
 ) => {
-	const res = await fetch(`http://localhost:4000/api/projects/${id}/update`, {
+	const res = await fetchProtected(`http://localhost:4000/api/projects/${id}/update`, {
 		method: "PUT",
 		headers: {
 			"Content-Type": "application/json",
@@ -78,7 +79,7 @@ export const deleteProjectItemsApi = async (
 	id: string,
 	selectedItems: string[]
 ) => {
-	const res = await fetch(
+	const res = await fetchProtected(
 		`http://localhost:4000/api/projects/${id}/items/delete`,
 		{
 			method: "DELETE",

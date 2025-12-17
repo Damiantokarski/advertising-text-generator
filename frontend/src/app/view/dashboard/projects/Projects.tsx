@@ -1,4 +1,5 @@
 import { createProjectApi } from "../../../../api/projectsApi";
+import { useAuth } from "../../../hooks/useAuth";
 import { useModal } from "../../../hooks/useModal";
 import { Icon } from "../../../ui/Icon";
 import { Pagination } from "../../../ui/Pagination";
@@ -10,6 +11,7 @@ import { useProjects } from "./hooks/useProjects";
 
 export const Projects = () => {
 	const { openModal, closeModal } = useModal();
+	const { logout } = useAuth();
 
 	const {
 		refetch,
@@ -42,13 +44,21 @@ export const Projects = () => {
 
 	return (
 		<section className="relative bg-surface rounded-lg shadow-md px-8 pt-12 pb-16 w-full max-w-7xl h-full  mx-auto my-12 ">
-			<button
-				onClick={handleNewProject}
-				className="flex items-center gap-2 bg-primary-blue-sky px-4 py-1.5 rounded-md text-surface  hover:bg-primary-blue-hover transition-colors cursor-pointer shadow-sm"
-			>
-				<Icon type="plus" className="text-sm" />
-				<span className="text-sm">Create project</span>
-			</button>
+			<div className="flex">
+				<button
+					onClick={handleNewProject}
+					className="flex items-center gap-2 bg-primary-blue-sky px-4 py-1.5 rounded-md text-surface  hover:bg-primary-blue-hover transition-colors cursor-pointer shadow-sm"
+				>
+					<Icon type="plus" className="text-sm" />
+					<span className="text-sm">Create project</span>
+				</button>
+				<button onClick={logout}
+					className="flex items-center mx-2 gap-2 bg-primary-blue-sky px-4 py-1.5 rounded-md text-surface  hover:bg-primary-blue-hover transition-colors cursor-pointer shadow-sm"
+				>
+					<Icon type="logout" className="text-secondary-light text-sm" />
+					<span className="text-sm">Logout</span>
+				</button>
+			</div>
 			<Title
 				as="h1"
 				title="Project List"
