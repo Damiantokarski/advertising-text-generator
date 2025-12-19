@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { Session, RegisterResult } from "../../api/auth";
+import type { Session, RegisterResult } from "../../api/authApi";
 
 export interface AuthContextType {
     user: Session;

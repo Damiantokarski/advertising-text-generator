@@ -1,6 +1,6 @@
-import { createProjectApi } from "../../../../../api/projectsApi";
-import { ProjectForm, type ProjectFormData } from "../../../../ui/ProjectForm";
-import { Title } from "../../../../ui/Title";
+import { createProjectApi } from "../../../../../../api/projectsApi";
+import { ProjectForm, type ProjectFormData } from "../../../../../ui/ProjectForm";
+import { Title } from "../../../../../ui/Title";
 
 export const CreateProject = () => {
 	const handleSubmit = async (data: ProjectFormData) => {

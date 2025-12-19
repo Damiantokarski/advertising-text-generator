@@ -46,7 +46,7 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
 server.use("/api/projects", requireAccessToken, projectRoutes);
-server.use("/api/fonts", requireAccessToken, fontsRoutes);
+server.use("/api/google-fonts", requireAccessToken, fontsRoutes);
 
 server.use("/api/auth", authRoutes);
 

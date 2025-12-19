@@ -1,17 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { Title } from "../../../../ui/Title";
-import { Icon } from "../../../../ui/Icon";
+import { Title } from "../../../../../ui/Title";
+import { Icon } from "../../../../../ui/Icon";
+import type { ProjectItem } from "../hooks/useProjects";
 
 interface ProjectCardProps {
-	project: {
-		projectId: string;
-		id: number;
-		job: string;
-		title: string;
-		name: string;
-		status: string;
-		createdAt: string;
-	};
+	project: ProjectItem;
 }
 
 export const ProjectCard = ({ project }: ProjectCardProps) => {

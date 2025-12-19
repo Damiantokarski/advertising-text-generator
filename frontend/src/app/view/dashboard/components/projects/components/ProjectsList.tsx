@@ -1,9 +1,8 @@
 import { ProjectCard } from "./ProjectCard";
-import List from "../../../../ui/List/List";
-import ListItem from "../../../../ui/List/ListItem";
+import List from "../../../../../ui/List/List";
+import ListItem from "../../../../../ui/List/ListItem";
 
 interface ProjectListProps {
-	refetch: () => void;
 	isProjects: boolean;
 	projects: {
 		projectId: string;
@@ -16,11 +15,7 @@ interface ProjectListProps {
 	}[];
 }
 
-export const ProjectList = ({
-	refetch,
-	isProjects,
-	projects,
-}: ProjectListProps) => {
+export const ProjectList = ({ isProjects, projects }: ProjectListProps) => {
 	if (isProjects)
 		return (
 			<p className="text-center text-gray-500 mt-10">No projects available...</p>
@@ -29,7 +24,7 @@ export const ProjectList = ({
 	return (
 		<List
 			type="ul"
-			className="flex flex-col gap-2 overflow-y-auto h-[calc(100%-8px)] hidden-scrollbar mt-4"
+			className="flex flex-col gap-2 overflow-y-auto hidden-scrollbar mt-4 h-[calc(100%-96px)] "
 		>
 			{projects.map((project) => (
 				<ListItem key={project.id} className=" w-full">
