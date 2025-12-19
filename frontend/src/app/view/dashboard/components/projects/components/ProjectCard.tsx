@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Title } from "../../../../../ui/Title";
-import { Icon } from "../../../../../ui/Icon";
 import type { ProjectItem } from "../hooks/useProjects";
+import { IconButton } from "../../../../../ui/IconButton";
 
 interface ProjectCardProps {
 	project: ProjectItem;
@@ -43,17 +43,22 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
 			</div>
 
 			<div className="flex items-center gap-2">
-				<button onClick={() => console.log("edit")} className="cursor-pointer">
-					<div className="flex items-center gap-2 text-primary-blue">
-						<Icon type="pencil" className="w-5 h-5 text-danger" />
-					</div>
-				</button>
-
-				<button onClick={() => console.log("delete")} className="cursor-pointer ">
-					<div className="flex items-center gap-2 text-fire ">
-						<Icon type="trash" className="w-5 h-5 text-danger" />
-					</div>
-				</button>
+				<IconButton
+					icon="pencil"
+					text="Edit"
+					className="text-primary-blue"
+					onClick={() => console.log("edit")}
+					tooltipPosition="left"
+					tooltipOffsetClass="mt-1"
+				/>
+				<IconButton
+					icon="trash"
+					text="Delete"
+					className="text-fire"
+					onClick={() => console.log("delete")}
+					tooltipPosition="left"
+					tooltipOffsetClass="mt-1"
+				/>
 			</div>
 		</article>
 	);

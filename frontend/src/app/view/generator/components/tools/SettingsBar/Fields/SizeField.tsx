@@ -1,6 +1,5 @@
 import type { ChangeEvent } from "react";
 import { FieldWrapper } from "../../../../../../ui/FieldWrapper";
-import { Icon } from "../../../../../../ui/Icon";
 import { Input } from "../../../../../../ui/Input/Input";
 import { useUpdateText } from "../../../../hooks/useActiveCanvas";
 
@@ -30,7 +29,7 @@ export const SizeField = () => {
     <FieldWrapper title="Size" className="flex gap-3">
       <Input
         type="number"
-        inputPrefix={<Icon type="width" className="text-xs" />}
+        inputPrefix={<p>W:</p>}
         value={Math.floor(width)}
         onChange={onChangeWidth}
         disabled={disabled}
@@ -38,7 +37,7 @@ export const SizeField = () => {
       />
       <Input
         type="number"
-        inputPrefix={<Icon type="height" className="text-xs" />}
+        inputPrefix={<p>H:</p>}
         value={Math.floor(height)}
         onChange={onChangeHeight}
         disabled={disabled}

@@ -24,13 +24,13 @@ export const Searchbar = ({
 	};
 
 	return (
-		<div className="border border-primary-blue-sky px-3 py-1.5 rounded-md flex items-center bg-main max-w-xs">
-			<Icon type="magnifyingGlass" className="text-primary-blue mr-2 " />
+		<label className="border border-primary-blue-sky px-3 py-1.5 rounded-md flex items-center max-w-xs">
+			<Icon type="magnifyingGlass" className="text-primary-blue mr-2" />
 			<input
 				placeholder={placeholder}
-				className="focus:outline-none text-sm"
+				className="focus:outline-none text-sm w-full"
 				onChange={(e) => handleInput(e.target.value)}
 			/>
-		</div>
+		</label>
 	);
 };

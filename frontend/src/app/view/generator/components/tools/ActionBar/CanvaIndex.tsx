@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
-import { Icon } from "../../../../../ui/Icon";
 import { setCanvaIndex } from "../../../../../store/slices/generator";
+import { IconButton } from "../../../../../ui/IconButton";
 
 export const CanvaIndex = () => {
 	const dispatch = useDispatch();
@@ -11,12 +11,22 @@ export const CanvaIndex = () => {
 
 	return (
 		<div className="flex gap-4 items-center">
-			<button className="cursor-pointer" onClick={() => handleCanvaIndex(1)}>
-				<Icon type="stackPop" className="text-lg" />
-			</button>
-			<button className="cursor-pointer" onClick={() => handleCanvaIndex(-1)}>
-				<Icon type="stackPush" className="text-lg" />
-			</button>
+			<IconButton
+				icon="stackPop"
+				text="Move Up"
+				className="text-lg"
+				onClick={() => handleCanvaIndex(1)}
+				tooltipPosition="right"
+				tooltipOffsetClass="mt-3"
+			/>
+			<IconButton
+				icon="stackPush"
+				text="Move Down"
+				className="text-lg"
+				onClick={() => handleCanvaIndex(-1)}
+				tooltipPosition="right"
+				tooltipOffsetClass="mt-3"
+			/>
 		</div>
 	);
 };

@@ -1,6 +1,5 @@
 import type { ChangeEvent } from "react";
 import { FieldWrapper } from "../../../../../../ui/FieldWrapper";
-import { Icon } from "../../../../../../ui/Icon";
 import { Input } from "../../../../../../ui/Input/Input";
 import { useUpdateText } from "../../../../hooks/useActiveCanvas";
 import { useSelector } from "react-redux";
@@ -29,7 +28,7 @@ export const PositionField = () => {
 		<FieldWrapper title="Position" className="flex gap-3">
 			<Input
 				type="number"
-				inputPrefix={<Icon type="xPos" className="text-xs" />}
+				inputPrefix={<p>X:</p>}
 				value={Math.floor(posX)}
 				onChange={onChangeX}
 				disabled={disabled || selectedElements.length > 1}
@@ -37,7 +36,7 @@ export const PositionField = () => {
 			/>
 			<Input
 				type="number"
-				inputPrefix={<Icon type="yPos" className="text-xs" />}
+				inputPrefix={<p>Y:</p>}
 				value={Math.floor(posY)}
 				onChange={onChangeY}
 				disabled={disabled || selectedElements.length > 1}

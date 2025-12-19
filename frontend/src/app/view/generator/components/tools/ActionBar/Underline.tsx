@@ -1,16 +1,20 @@
 import { useDispatch } from "react-redux";
-import { Icon } from "../../../../../ui/Icon";
 import { setUnderline } from "../../../../../store/slices/generator";
+import { IconButton } from "../../../../../ui/IconButton";
 
 export const Underline = () => {
 	const dispatch = useDispatch();
 
-	const handleUnderline = () => {
-		dispatch(setUnderline());
-	};
+	const handleUnderline = () => dispatch(setUnderline());
+
 	return (
-		<button className="cursor-pointer" onClick={handleUnderline}>
-			<Icon type="textUnderline" className="text-lg" />
-		</button>
+		<IconButton
+			icon="textUnderline"
+			text="Underline"
+			className="text-lg"
+			onClick={handleUnderline}
+			tooltipPosition="right"
+			tooltipOffsetClass="mt-3"
+		/>
 	);
 };

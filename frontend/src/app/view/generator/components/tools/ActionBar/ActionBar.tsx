@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AddPsdFile } from "./AddPsdFile";
 import { CanvaIndex } from "./CanvaIndex";
 import { CreateNewText } from "./CreateNewText";
@@ -8,8 +8,9 @@ import { CreateNewTemplate } from "./NewTemplate/CreateNewTemplate";
 import { SaveProject } from "./SaveProject";
 import { StageScale } from "./StageScale";
 import { Underline } from "./Underline";
-import { Icon } from "../../../../../ui/Icon";
-import { useAuth } from "../../../../../hooks/useAuth";
+
+import { CopyLink } from "./CopyLink";
+import { IconButton } from "../../../../../ui/IconButton";
 
 export interface ToolsProps {
 	scale: number;
@@ -22,7 +23,7 @@ export interface ToolsProps {
 
 export const ActionBar = ({ scale, onChange, barsState }: ToolsProps) => {
 	const { isItemsBarOpen, isSettingsBarOpen } = barsState;
-	const { logout } = useAuth();
+	const navigate = useNavigate();
 
 	let maxWidth = "max-w-[calc(100%-113px)]";
 
@@ -37,31 +38,38 @@ export const ActionBar = ({ scale, onChange, barsState }: ToolsProps) => {
 
 	const left = isItemsBarOpen ? "left-76" : "left-10";
 
+	const handleNavigate = () => navigate("/");
+
 	return (
 		<section
 			className={`fixed top-0 flex  items-center justify-between gap-4 p-4 shadow  bg-surface m-4 rounded-sm w-full  transition-all ${left} ${maxWidth}`}
 		>
 			<div className="flex items-center gap-10 justify-center">
-				<Link to="/" className="cursor-pointer">
-					<Icon type="homeMove" className="text-lg " />
-				</Link>
-				<button onClick={logout} className="cursor-pointer">
-					<Icon type="logout" className="text-secondary-light text-lg" />
-				</button>
+				<IconButton
+					icon="homeMove"
+					text="Home"
+					className="text-lg"
+					onClick={handleNavigate}
+					tooltipPosition="right"
+					tooltipOffsetClass="mt-3"
+				/>
+
 				<div className="flex gap-4 items-center">
 					<CreateNewText />
 					<Underline />
 				</div>
+
 				<Headers />
 				<CreateNewTemplate />
 				<CanvaIndex />
 				<AddPsdFile />
+
 				<div className="flex gap-4 items-center justify-center">
+					<CopyLink />
 					<SaveProject />
 					<DeleteElement />
 				</div>
 			</div>
-
 
 			<StageScale
 				scale={scale}

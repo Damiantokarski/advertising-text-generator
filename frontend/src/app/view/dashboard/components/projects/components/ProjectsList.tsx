@@ -24,7 +24,7 @@ export const ProjectList = ({ isProjects, projects }: ProjectListProps) => {
 	return (
 		<List
 			type="ul"
-			className="flex flex-col gap-2 overflow-y-auto hidden-scrollbar mt-4 h-[calc(100%-96px)] "
+			className="flex flex-col gap-2 overflow-y-auto hidden-scrollbar mt-4 h-[calc(100%-48px)] "
 		>
 			{projects.map((project) => (
 				<ListItem key={project.id} className=" w-full">

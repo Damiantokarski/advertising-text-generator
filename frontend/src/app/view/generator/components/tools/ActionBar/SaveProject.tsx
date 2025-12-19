@@ -1,10 +1,8 @@
 import { useSelector } from "react-redux";
-
 import { useParams } from "react-router-dom";
-
-import { Icon } from "../../../../../ui/Icon";
 import type { RootState } from "../../../../../store/store";
 import { updateProjectApi } from "../../../../../../api/projectsApi";
+import { IconButton } from "../../../../../ui/IconButton";
 
 export const SaveProject = () => {
 	const { id } = useParams();
@@ -17,8 +15,13 @@ export const SaveProject = () => {
 	};
 
 	return (
-		<button onClick={handleSaveProjectElements} className="cursor-pointer">
-			<Icon type="save" className="text-lg" />
-		</button>
+		<IconButton
+			icon="save"
+			text="Save"
+			className="text-lg text-primary-blue"
+			onClick={handleSaveProjectElements}
+			tooltipPosition="right"
+			tooltipOffsetClass="mt-3"
+		/>
 	);
 };

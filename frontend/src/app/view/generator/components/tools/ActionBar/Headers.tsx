@@ -3,6 +3,7 @@ import { Icon } from "../../../../../ui/Icon";
 import { useClickOutside } from "../../../../../hooks/useClickOutside";
 import { useDispatch } from "react-redux";
 import { updateActiveTextStyle } from "../../../../../store/slices/generator";
+import { IconButton } from "../../../../../ui/IconButton";
 
 const headers = [
 	{ type: "header1", label: "Header 1", className: "text-2xl", size: 24 },
@@ -24,14 +25,20 @@ export const Headers = () => {
 	useClickOutside(ref, () => setIsOpen(false));
 
 	const onSelectHeader = (size: number) => {
-    dispatch(updateActiveTextStyle(size));
-  };
+		dispatch(updateActiveTextStyle(size));
+	};
 
 	return (
 		<div className="relative flex gap-4" ref={ref}>
-			<button onClick={showDropDown} className="cursor-pointer">
-				<Icon type="height" className="text-lg" />
-			</button>
+			<IconButton
+				icon="header"
+				text="Headers"
+				className="text-lg"
+				onClick={showDropDown}
+				tooltipPosition="right"
+				tooltipOffsetClass="mt-3"
+			/>
+
 			{isOpen && (
 				<div className="shadow rounded-sm z-1000 absolute left-0 top-12 bg-surface flex flex-col gap-3 px-4 py-4 text-tiny w-42 ">
 					{headers.map((header) => (

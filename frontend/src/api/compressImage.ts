@@ -1,11 +1,26 @@
+export type CompressionSummary = {
+	ok: boolean;
+	received: number;
+	accepted: number;
+	rejected: number;
+	processed: number;
+	errorCount: number;
+	totalInputBytes: number;
+	totalOutputBytes: number;
+	totalSavedBytes: number;
+	outputKind: "single" | "zip";
+	outputFilename: string;
+	errors: Array<{ filename: string; reason: string }>;
+};
+
 function parseFilenameFromContentDisposition(
 	cd: string | null
 ): string | undefined {
 	if (!cd) return;
+
 	const star = cd.match(/filename\*\s*=\s*([^;]+)/i);
 	if (star) {
-		let v = star[1].trim();
-		v = v.replace(/^"|"$/g, "");
+		let v = star[1].trim().replace(/^"|"$/g, "");
 		const parts = v.split("''");
 		if (parts.length === 2) v = parts[1];
 		try {
@@ -14,6 +29,7 @@ function parseFilenameFromContentDisposition(
 			return v;
 		}
 	}
+
 	const plain = cd.match(/filename\s*=\s*("?)([^";]+)\1/i);
 	if (plain) return plain[2];
 }
@@ -41,113 +57,124 @@ function ensureExtension(name: string, fallbackExt: string): string {
 	return hasExt ? name : `${name}.${fallbackExt}`;
 }
 
-/**
- * compressImages - now accepts optional onProgress callback
- * onProgress(percent: number) -> percent 0..100
- */
-export async function compressImages(
+async function readBlobAsText(blob: Blob): Promise<string> {
+	return await new Promise((resolve, reject) => {
+		const r = new FileReader();
+		r.onload = () => resolve(String(r.result ?? ""));
+		r.onerror = () => reject(new Error("Failed to read error body"));
+		r.readAsText(blob);
+	});
+}
+
+function safeJsonParse<T>(txt: string): T | undefined {
+	try {
+		return JSON.parse(txt) as T;
+	} catch {
+		return undefined;
+	}
+}
+
+export type CompressImagesApiResult = {
+	blob: Blob;
+	filename?: string;
+	summary?: CompressionSummary;
+};
+
+export const compressImagesApi = async (
 	files: File[],
-	fileName?: string,
+	downloadName?: string,
 	onProgress?: (percent: number) => void
-): Promise<{ blob: Blob; filename?: string }> {
-	if (!files?.length) throw new Error("Brak plików do kompresji.");
+): Promise<CompressImagesApiResult> => {
+	if (!files?.length) {
+		throw new Error("No files to compress.");
+	}
 
 	const form = new FormData();
 	for (const file of files) form.append("files", file, file.name);
 
 	const qs = new URLSearchParams({ format: "original" });
-	if (fileName && fileName.trim()) qs.set("downloadName", fileName.trim());
+	if (downloadName && downloadName.trim())
+		qs.set("downloadName", downloadName.trim());
 
 	const url = `http://localhost:4000/api/compress-download?${qs.toString()}`;
 
-	return new Promise((resolve, reject) => {
+	return await new Promise((resolve, reject) => {
 		const xhr = new XMLHttpRequest();
 		xhr.open("POST", url);
 		xhr.responseType = "blob";
 
-		// upload progress -> mapped to 0..50%
+		// upload progress -> 0..50
 		xhr.upload.onprogress = (ev) => {
 			if (!onProgress) return;
 			if (ev.lengthComputable && ev.total > 0) {
 				const uploadPct = (ev.loaded / ev.total) * 50;
-				onProgress(Math.min(100, Math.floor(uploadPct)));
+				onProgress(Math.max(0, Math.min(100, Math.floor(uploadPct))));
 			} else {
-				// fallback: small heuristic progress during upload
-				const heuristic = Math.min(
-					45,
-					Math.floor((ev.loaded / (1024 * 1024)) * 5)
-				);
+				// heuristic
+				const heuristic = Math.min(45, Math.floor((ev.loaded / (1024 * 1024)) * 5));
 				onProgress(heuristic);
 			}
 		};
 
-		// download progress -> mapped to 50..100%
+		// download progress -> 50..100
 		xhr.onprogress = (ev) => {
 			if (!onProgress) return;
 			if (ev.lengthComputable && ev.total > 0) {
 				const downloadPct = 50 + (ev.loaded / ev.total) * 50;
-				onProgress(Math.min(100, Math.floor(downloadPct)));
+				onProgress(Math.max(0, Math.min(100, Math.floor(downloadPct))));
 			} else {
-				// when total unknown, slowly advance from 50 -> 95
 				const approx = Math.min(95, 50 + Math.floor(ev.loaded / (256 * 1024)));
 				onProgress(approx);
 			}
 		};
 
 		xhr.onload = async () => {
-			// final progress
 			onProgress?.(100);
 
+			const blob = xhr.response as Blob;
+
+			// błąd HTTP → spróbuj wyciągnąć JSON/text
 			if (xhr.status < 200 || xhr.status >= 300) {
-				// try to read text for error
-				const reader = new FileReader();
-				reader.onload = () => {
-					const txt = String(reader.result ?? "");
-					reject(
-						new Error(
-							`Compression failed: ${xhr.status} ${xhr.statusText} ${txt}`
-						)
-					);
-				};
-				reader.onerror = () =>
-					reject(
-						new Error(`Compression failed: ${xhr.status} ${xhr.statusText}`)
-					);
-				reader.readAsText(xhr.response);
+				const txt = await readBlobAsText(blob).catch(() => "");
+				const maybeJson = safeJsonParse<{ error: string; message: string }>(txt);
+				const msg =
+					maybeJson?.error ||
+					maybeJson?.message ||
+					txt ||
+					`Compression failed: ${xhr.status} ${xhr.statusText}`;
+				reject(new Error(msg));
 				return;
 			}
 
 			const cd = xhr.getResponseHeader("content-disposition");
 			const ct = xhr.getResponseHeader("content-type");
+			const summaryHeader = xhr.getResponseHeader("x-compression-summary");
+
+			const summary = summaryHeader
+				? safeJsonParse<CompressionSummary>(summaryHeader)
+				: undefined;
 
 			let filename = parseFilenameFromContentDisposition(cd);
 
-			if (fileName && fileName.trim()) {
+			if (downloadName && downloadName.trim()) {
 				if ((ct || "").toLowerCase().includes("zip")) {
-					filename = ensureExtension(fileName.trim(), "zip");
+					filename = ensureExtension(downloadName.trim(), "zip");
 				} else {
 					const inferred = inferFilename(ct);
 					const fallbackExt = inferred.split(".").pop() || "bin";
-					filename = ensureExtension(fileName.trim(), fallbackExt);
+					filename = ensureExtension(downloadName.trim(), fallbackExt);
 				}
 			}
 
 			if (!filename) {
-				if (files.length === 1) {
-					filename = files[0].name;
-				} else {
-					filename = "compressed.zip";
-				}
+				filename = files.length === 1 ? files[0].name : "compressed.zip";
 			}
 
-			const blob = xhr.response as Blob;
-			resolve({ blob, filename });
+			resolve({ blob, filename, summary });
 		};
 
-		xhr.onerror = () => {
+		xhr.onerror = () =>
 			reject(new Error("Network error during compression request."));
-		};
-
 		xhr.send(form);
 	});
-}
+};

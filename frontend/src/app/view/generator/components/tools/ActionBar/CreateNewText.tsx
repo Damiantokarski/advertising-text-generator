@@ -1,12 +1,19 @@
-import { Icon } from "../../../../../ui/Icon";
+import { IconButton } from "../../../../../ui/IconButton";
 import { useCreateText } from "../../../hooks/useCreateText";
 
 export const CreateNewText = () => {
 	const addText = useCreateText();
 
+	const handleNewText = () => addText();
+
 	return (
-		<button onClick={() => addText()} className="cursor-pointer">
-			<Icon type="text" className="text-lg" />
-		</button>
+		<IconButton
+			icon="text"
+			text="Add Text"
+			className="text-lg"
+			onClick={handleNewText}
+			tooltipPosition="right"
+			tooltipOffsetClass="mt-3"
+		/>
 	);
 };

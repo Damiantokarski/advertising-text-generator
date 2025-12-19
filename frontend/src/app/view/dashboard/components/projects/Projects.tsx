@@ -19,7 +19,7 @@ export const Projects = () => {
 	} = useProjects();
 
 	return (
-		<section className="relative bg-surface rounded-lg shadow-md p-8 w-full max-w-4xl h-full max-h-[calc(100vh-176px)] mt-16 ">
+		<section className="relative bg-surface rounded-lg shadow-md p-8 w-full h-full max-h-[calc(100vh-176px)] mt-16 ">
 			<Title
 				as="h1"
 				title="Project List"

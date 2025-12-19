@@ -1,6 +1,7 @@
-import List from "./List/List";
-import ListItem from "./List/ListItem";
+import List from "../../../../../ui/List/List";
+import ListItem from "../../../../../ui/List/ListItem";
 import { CompressImageListItem } from "./CompressImageListItem";
+
 
 interface CompressImageListProps {
 	files: File[];
@@ -11,7 +12,7 @@ export const CompressImageList = ({
 	removeFile,
 }: CompressImageListProps) => {
 	return (
-		<List type="ul" className="flex flex-col gap-1 w-full h-full overflow-y-auto py-2 hidden-scrollbar max-w-112">
+		<List type="ul" className="flex flex-col gap-1 w-full h-full max-h-[calc(100%-50px)] overflow-y-auto py-2  max-w-md">
 			{files.map((file, index) => (
 				<ListItem key={index} >
 					<CompressImageListItem

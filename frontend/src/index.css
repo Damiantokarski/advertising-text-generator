@@ -35,3 +35,30 @@ html {
 .hidden-scrollbar::-webkit-scrollbar {
 	display: none;
 }
+
+.progress-bar {
+	width: 100%;
+	height: 12px;
+	border: none;
+	border-radius: 0.5rem;
+	overflow: hidden;
+	background-color: #e5e7eb;
+	appearance: none;
+}
+
+.progress-bar::-webkit-progress-bar {
+	background-color: #e5e7eb;
+	border-radius: 0.5rem;
+}
+
+.progress-bar::-webkit-progress-value {
+	background-color: #68b6ef;
+	transition: width 200ms ease;
+	border-radius: 0.5rem;
+}
+
+.progress-bar::-moz-progress-bar {
+	background-color: #68b6ef;
+	transition: width 200ms ease;
+	border-radius: 0.5rem;
+}

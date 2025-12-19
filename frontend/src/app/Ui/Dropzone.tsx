@@ -66,7 +66,7 @@ export const Dropzone = ({
 					type="cloudArrowDown"
 					className="text-2xl text-primary-blue-sky "
 				/>
-				<p className="text-center">Drag & drop or select files</p>
+				<p className="text-center text-sm">Drag & drop or select files</p>
 
 				<input
 					ref={inputRef}

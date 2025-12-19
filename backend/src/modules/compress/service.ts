@@ -1,9 +1,9 @@
 import sharp from "sharp";
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import archiver from "archiver";
 import { optimize as svgoOptimize } from "svgo";
+import path from "path";
 
-/**  Typy i utilsy  */
 type UploadFile = {
 	buffer: Buffer;
 	filename: string;
@@ -12,416 +12,537 @@ type UploadFile = {
 
 type TargetFmt = "original" | "webp" | "avif" | "jpeg" | "png";
 
+type FileReport = {
+	inputName: string;
+	inputType: string;
+	inputBytes: number;
+	ok: boolean;
+	outputName?: string;
+	outputType?: string;
+	outputBytes?: number;
+	savedBytes?: number;
+	reason?: string;
+};
+
+type CompressionSummary = {
+	ok: boolean;
+	received: number;
+	accepted: number;
+	rejected: number;
+	processed: number;
+	errorCount: number;
+	totalInputBytes: number;
+	totalOutputBytes: number;
+	totalSavedBytes: number;
+	outputKind: "single" | "zip";
+	outputFilename: string;
+	errors: Array<{ filename: string; reason: string }>;
+};
+
 function sanitizeName(name: string) {
-	return name.replace(/[/\\?%*:|"<>]/g, "_");
+	return name.replace(/[/\\?%*:|"<>]/g, "_").trim() || "file";
 }
 
-function isSvg(mime: string, filename: string) {
+function isSvgFile(f: UploadFile) {
+	const n = f.filename.toLowerCase();
 	return (
-		mime.toLowerCase().includes("image/svg+xml") ||
-		filename.toLowerCase().endsWith(".svg")
+		f.contentType.toLowerCase().includes("svg") ||
+		n.endsWith(".svg") ||
+		n.endsWith(".svgz")
 	);
 }
 
-function extFromMime(mime: string): "jpeg" | "png" | "webp" | "avif" {
-	const m = mime.toLowerCase();
-	if (m.includes("jpeg") || m.includes("jpg")) return "jpeg";
-	if (m.includes("png")) return "png";
-	if (m.includes("webp")) return "webp";
-	if (m.includes("avif")) return "avif";
-	return "jpeg";
+function getExtFromName(filename: string) {
+	const ext = path.extname(filename).replace(".", "").toLowerCase();
+	return ext || "";
 }
 
-function pickTargetFormat(
-	inputMime: string,
-	hasAlpha: boolean,
-	prefer: TargetFmt
-): "webp" | "avif" | "jpeg" | "png" {
-	if (prefer && prefer !== "original") return prefer;
-	return extFromMime(inputMime);
+function stripExt(filename: string) {
+	const ext = path.extname(filename);
+	return ext ? filename.slice(0, -ext.length) : filename;
+}
+
+function guessTargetExt(
+	fmt: TargetFmt,
+	originalName: string,
+	originalType: string
+) {
+	if (fmt !== "original") {
+		if (fmt === "jpeg") return "jpg";
+		return fmt;
+	}
+	// original: spróbuj rozszerzenie, a jak nie ma to z content-type
+	const ext = getExtFromName(originalName);
+	if (ext) return ext;
+	const ct = (originalType || "").toLowerCase();
+	if (ct.includes("jpeg")) return "jpg";
+	if (ct.includes("png")) return "png";
+	if (ct.includes("webp")) return "webp";
+	if (ct.includes("avif")) return "avif";
+	if (ct.includes("svg")) return "svg";
+	return "bin";
+}
+
+function buildContentDisposition(filename: string) {
+	// RFC 5987 / filename*
+	const safe = sanitizeName(filename);
+	return `attachment; filename="${safe}"; filename*=UTF-8''${encodeURIComponent(
+		safe
+	)}`;
 }
 
 function toUploadFiles(req: Request): UploadFile[] {
+	// multer może dać: req.file, req.files jako array lub jako mapę field->files[]
 	const anyReq = req as any;
 
-	if (Array.isArray(anyReq.files)) {
-		return anyReq.files.map((f: Express.Multer.File) => ({
-			buffer: f.buffer,
-			filename: f.originalname,
-			contentType: f.mimetype,
-		}));
+	const out: UploadFile[] = [];
+
+	if (anyReq.file?.buffer) {
+		out.push({
+			buffer: anyReq.file.buffer,
+			filename: anyReq.file.originalname || anyReq.file.filename || "file",
+			contentType: anyReq.file.mimetype || "application/octet-stream",
+		});
+		return out;
 	}
 
-	if (anyReq.file) {
-		const f = anyReq.file as Express.Multer.File;
-		return [
-			{ buffer: f.buffer, filename: f.originalname, contentType: f.mimetype },
-		];
+	const files = anyReq.files;
+
+	if (Array.isArray(files)) {
+		for (const f of files) {
+			if (!f?.buffer) continue;
+			out.push({
+				buffer: f.buffer,
+				filename: f.originalname || f.filename || "file",
+				contentType: f.mimetype || "application/octet-stream",
+			});
+		}
+		return out;
 	}
 
-	if (anyReq.files && typeof anyReq.files === "object") {
-		const dict = anyReq.files as Record<string, Express.Multer.File[]>;
-		const all: UploadFile[] = [];
-		for (const key of Object.keys(dict)) {
-			for (const f of dict[key]) {
-				all.push({
+	if (files && typeof files === "object") {
+		for (const key of Object.keys(files)) {
+			const arr = files[key];
+			if (!Array.isArray(arr)) continue;
+			for (const f of arr) {
+				if (!f?.buffer) continue;
+				out.push({
 					buffer: f.buffer,
-					filename: f.originalname,
-					contentType: f.mimetype,
+					filename: f.originalname || f.filename || "file",
+					contentType: f.mimetype || "application/octet-stream",
 				});
 			}
 		}
-		return all;
 	}
 
-	return [];
+	return out;
 }
 
-/**  Kompresja SVG (SVGO v3)  */
-function optimizeSvgBuffer(
-	buf: Buffer,
-	filename: string,
-	opts: {
-		multipass?: boolean;
-		pretty?: boolean;
-		skipIfBigger?: boolean;
-		enableRemoveViewBox?: boolean;
-		enableRemoveDimensions?: boolean;
-		floatPrecision?: number;
-	} = {}
-) {
-	const {
-		multipass = true,
-		pretty = false,
-		skipIfBigger = true,
-		enableRemoveViewBox = false,
-		enableRemoveDimensions = false,
-		floatPrecision = 3,
-	} = opts;
+function validateFile(f: UploadFile): { ok: boolean; reason?: string } {
+	if (!f.buffer || f.buffer.length === 0)
+		return { ok: false, reason: "Empty file" };
+	const ct = (f.contentType || "").toLowerCase();
 
-	const svgString = buf.toString("utf-8");
+	// SVG obsługujemy jawnie
+	if (isSvgFile(f)) return { ok: true };
 
-	const plugins: any[] = [
-		{
-			name: "preset-default",
-			params: {
-				overrides: {
-					cleanupNumericValues: { floatPrecision },
-				},
-			},
-		},
-		"convertStyleToAttrs",
-	];
+	// dla rastrów: typ image/*
+	if (ct.startsWith("image/")) return { ok: true };
 
-	if (enableRemoveViewBox) plugins.push("removeViewBox");
-	if (enableRemoveDimensions) plugins.push("removeDimensions");
-
-	const { data } = svgoOptimize(svgString, {
-		multipass,
-		js2svg: { pretty },
-		plugins,
-	});
-
-	const out = Buffer.from(data, "utf-8");
-	if (skipIfBigger && out.length >= buf.length) {
-		return {
-			buffer: buf,
-			filename,
-			contentType: "image/svg+xml",
-			originalBytes: buf.length,
-			outputBytes: buf.length,
-		};
+	// czasem przeglądarka daje pusty mimetype – spróbuj po rozszerzeniu
+	const ext = getExtFromName(f.filename);
+	if (
+		[
+			"png",
+			"jpg",
+			"jpeg",
+			"webp",
+			"avif",
+			"gif",
+			"tiff",
+			"bmp",
+			"heic",
+			"heif",
+		].includes(ext)
+	) {
+		return { ok: true };
 	}
 
-	const base = sanitizeName(filename.replace(/\.[^/.]+$/, ""));
 	return {
-		buffer: out,
-		filename: `${base}.svg`,
-		contentType: "image/svg+xml",
-		originalBytes: buf.length,
-		outputBytes: out.length,
+		ok: false,
+		reason: `Unsupported content-type: ${f.contentType || "unknown"}`,
 	};
 }
 
-/**  Kompresja rastrów (sharp)  */
-async function compressRasterBuffer(
+async function compressSvg(
+	buf: Buffer
+): Promise<{ out: Buffer; contentType: string }> {
+	const src = buf.toString("utf-8");
+	const optimized = svgoOptimize(src, { multipass: true });
+	if ("data" in optimized && typeof optimized.data === "string") {
+		return {
+			out: Buffer.from(optimized.data, "utf-8"),
+			contentType: "image/svg+xml",
+		};
+	}
+	// fallback: zwróć oryginał
+	return { out: buf, contentType: "image/svg+xml" };
+}
+
+async function compressRaster(
 	buf: Buffer,
-	filename: string,
-	contentType: string,
+	originalType: string,
+	preferFormat: TargetFmt,
 	opts: {
+		quality: number;
 		maxWidth?: number;
-		quality?: number;
-		lossless?: boolean;
-		preferFormat?: TargetFmt;
-		keepMetadata?: boolean;
-		skipIfBigger?: boolean;
-	} = {}
-) {
-	const {
-		maxWidth,
-		quality = 85,
-		lossless = false,
-		preferFormat = "original",
-		keepMetadata = false,
-		skipIfBigger = true,
-	} = opts;
+		keepMetadata: boolean;
+		lossless: boolean;
+		skipIfBigger: boolean;
+	}
+): Promise<{ out: Buffer; contentType: string }> {
+	const { quality, maxWidth, keepMetadata, lossless, skipIfBigger } = opts;
 
 	let img = sharp(buf, { failOn: "warning" }).rotate();
-	if (!keepMetadata) img = img.withMetadata({ orientation: undefined });
+
+	if (!keepMetadata) {
+		img = img.withMetadata({ orientation: undefined });
+	} else {
+		img = img.withMetadata();
+	}
 
 	const meta = await img.metadata();
-	const hasAlpha = Boolean(meta.hasAlpha);
-
 	const width = meta.width || undefined;
+
 	if (width && maxWidth && width > maxWidth) {
 		img = img.resize({ width: maxWidth, withoutEnlargement: true });
 	}
 
-	const target = pickTargetFormat(contentType, hasAlpha, preferFormat);
+	// wybór formatu
+	const ctLower = (originalType || "").toLowerCase();
+	const origIsPng = ctLower.includes("png");
+	const origIsJpeg = ctLower.includes("jpeg") || ctLower.includes("jpg");
+	const origIsWebp = ctLower.includes("webp");
+	const origIsAvif = ctLower.includes("avif");
 
-	let out: sharp.Sharp;
-	let outExt = target;
+	let out: Buffer;
+	let outType: string;
 
-	switch (target) {
-		case "png":
-			out = img.png({
-				compressionLevel: 9,
-				palette: true,
-				effort: 10,
-			});
-			outExt = "png";
-			break;
+	const target = preferFormat;
 
-		case "jpeg":
-			out = img.jpeg({
-				quality,
-				mozjpeg: true,
-				progressive: true,
-			});
-			outExt = "jpeg";
-			break;
-
-		case "webp":
-			out = img.webp({
-				quality,
-				lossless: lossless || contentType.toLowerCase().includes("png"),
-				effort: 4,
-				nearLossless:
-					contentType.toLowerCase().includes("png") && !lossless
-						? true
-						: undefined,
-				alphaQuality: hasAlpha ? 100 : undefined,
-			});
-			outExt = "webp";
-			break;
-
-		case "avif":
-			out = img.avif({
-				quality,
-				lossless,
-				effort: 4,
-				chromaSubsampling: lossless ? "4:4:4" : "4:2:0",
-			});
-			outExt = "avif";
-			break;
+	if (target === "webp") {
+		out = await img.webp({ quality, lossless }).toBuffer();
+		outType = "image/webp";
+	} else if (target === "avif") {
+		out = await img.avif({ quality, lossless }).toBuffer();
+		outType = "image/avif";
+	} else if (target === "jpeg") {
+		out = await img.jpeg({ quality, mozjpeg: true }).toBuffer();
+		outType = "image/jpeg";
+	} else if (target === "png") {
+		out = await img.png({ quality, compressionLevel: 9 }).toBuffer();
+		outType = "image/png";
+	} else {
+		// original: zachowaj możliwie to co było, ale prze-encode
+		if (origIsWebp) {
+			out = await img.webp({ quality, lossless }).toBuffer();
+			outType = "image/webp";
+		} else if (origIsAvif) {
+			out = await img.avif({ quality, lossless }).toBuffer();
+			outType = "image/avif";
+		} else if (origIsPng) {
+			out = await img.png({ quality, compressionLevel: 9 }).toBuffer();
+			outType = "image/png";
+		} else if (origIsJpeg) {
+			out = await img.jpeg({ quality, mozjpeg: true }).toBuffer();
+			outType = "image/jpeg";
+		} else {
+			// fallback: webp
+			out = await img.webp({ quality, lossless }).toBuffer();
+			outType = "image/webp";
+		}
 	}
 
-	const data = await out.toBuffer();
-
-	if (skipIfBigger && data.length >= buf.length) {
-		return {
-			buffer: buf,
-			filename,
-			contentType,
-			originalBytes: buf.length,
-			outputBytes: buf.length,
-			meta,
-		};
+	if (skipIfBigger && out.length >= buf.length) {
+		return { out: buf, contentType: originalType || "application/octet-stream" };
 	}
 
-	const base = sanitizeName(filename.replace(/\.[^/.]+$/, ""));
-	const chosenExt =
-		preferFormat === "original" ? filename.split(".").pop() || outExt : outExt;
-	const outName = `${base}.${chosenExt}`;
-
-	const outType =
-		chosenExt === "webp"
-			? "image/webp"
-			: chosenExt === "avif"
-				? "image/avif"
-				: chosenExt === "jpeg" || chosenExt === "jpg"
-					? "image/jpeg"
-					: "image/png";
-
-	return {
-		buffer: data,
-		filename: outName,
-		contentType: outType,
-		originalBytes: buf.length,
-		outputBytes: data.length,
-		meta,
-	};
+	return { out, contentType: outType };
 }
 
-/**  Dispatcher: SVG lub rastry  */
-async function compressAnyBuffer(
-	buf: Buffer,
-	filename: string,
-	contentType: string,
-	commonOpts: {
-		maxWidth?: number;
-		quality?: number;
-		lossless?: boolean;
-		preferFormat?: TargetFmt;
-		keepMetadata?: boolean;
-		skipIfBigger?: boolean;
-	}
-) {
-	if (isSvg(contentType, filename)) {
-		return optimizeSvgBuffer(buf, filename, {
-			multipass: true,
-			pretty: false,
-			skipIfBigger: commonOpts.skipIfBigger ?? true,
-			enableRemoveViewBox: false,
-			enableRemoveDimensions: false,
-			floatPrecision: 3,
-		});
-	}
-	return compressRasterBuffer(buf, filename, contentType, commonOpts);
-}
-
-/** Pomocnik nazw do pobrania */
-function buildDownloadNameSingle(
-	requested: string | undefined,
-	producedFilename: string,
-	producedContentType: string
-) {
-	const safeRequested = requested ? sanitizeName(requested.trim()) : "";
-	if (!safeRequested) return producedFilename;
-
-	const hasExt = /\.[a-z0-9]+$/i.test(safeRequested);
-	if (hasExt) return safeRequested;
-
-	const ct = (producedContentType || "").toLowerCase();
-	const ext = ct.includes("webp")
-		? "webp"
-		: ct.includes("avif")
-			? "avif"
-			: ct.includes("jpeg")
-				? "jpg"
-				: ct.includes("png")
-					? "png"
-					: ct.includes("svg")
-						? "svg"
-						: producedFilename.split(".").pop() || "bin";
-
-	return `${safeRequested}.${ext}`;
-}
-
-function buildDownloadNameZip(requested: string | undefined) {
-	const base = requested ? sanitizeName(requested.trim()) : "images-compressed";
-	return /\.[a-z0-9]+$/i.test(base) ? base : `${base}.zip`;
-}
-
-function setContentDisposition(res: Response, filename: string) {
-	res.setHeader(
-		"Content-Disposition",
-		`attachment; filename="${filename}"; filename*=UTF-8''${encodeURIComponent(filename)}`
-	);
-}
-
-/**  Handler HTTP  */
 export async function compressImage(req: Request, res: Response) {
 	try {
 		const files = toUploadFiles(req);
 
-		if (!files || files.length === 0) {
-			res
-				.status(400)
-				.send(
-					"No files uploaded. Make sure field name matches your multer middleware."
-				);
+		if (!files.length) {
+			res.status(400).json({ ok: false, error: "No files uploaded" });
 			return;
 		}
 
 		const preferFormat = String(
 			req.query.format || "original"
 		).toLowerCase() as TargetFmt;
-		const maxWidth = req.query.maxWidth
-			? Number(req.query.maxWidth)
-			: undefined;
-		const quality = req.query.quality
-			? Math.max(1, Math.min(100, Number(req.query.quality)))
-			: 85;
-		const lossless = String(req.query.lossless || "false") === "true";
-		const keepMetadata = String(req.query.keepMetadata || "false") === "true";
-		const downloadName =
+		const requestedName =
 			typeof req.query.downloadName === "string"
-				? req.query.downloadName
-				: undefined;
+				? req.query.downloadName.trim()
+				: "";
 
-		const common = {
-			maxWidth,
-			quality,
-			lossless,
-			preferFormat,
-			keepMetadata,
-			skipIfBigger: true,
-		};
+		const quality = Number(req.query.quality ?? 80);
+		const maxWidthRaw =
+			req.query.maxWidth != null ? Number(req.query.maxWidth) : undefined;
+		const maxWidth = Number.isFinite(maxWidthRaw as any)
+			? (maxWidthRaw as number)
+			: undefined;
+		const keepMetadata =
+			String(req.query.keepMetadata ?? "false").toLowerCase() === "true";
+		const lossless =
+			String(req.query.lossless ?? "false").toLowerCase() === "true";
+		const skipIfBigger =
+			String(req.query.skipIfBigger ?? "true").toLowerCase() !== "false";
 
-		if (files.length === 1) {
-			const f = files[0];
-			const out = await compressAnyBuffer(
-				f.buffer,
-				f.filename,
-				f.contentType,
-				common
-			);
+		const totalInputBytes = files.reduce(
+			(a, f) => a + (f.buffer?.length || 0),
+			0
+		);
 
-			const finalName = buildDownloadNameSingle(
-				downloadName,
-				out.filename,
-				out.contentType
-			);
+		const reports: FileReport[] = [];
+		const valid: UploadFile[] = [];
+		const invalidErrors: Array<{ filename: string; reason: string }> = [];
 
-			res.setHeader("Content-Type", out.contentType);
-			setContentDisposition(res, finalName);
-			res.send(out.buffer);
+		for (const f of files) {
+			const v = validateFile(f);
+			if (!v.ok) {
+				invalidErrors.push({
+					filename: f.filename,
+					reason: v.reason || "Invalid file",
+				});
+				reports.push({
+					inputName: f.filename,
+					inputType: f.contentType,
+					inputBytes: f.buffer?.length || 0,
+					ok: false,
+					reason: v.reason || "Invalid file",
+				});
+			} else {
+				valid.push(f);
+			}
+		}
+
+		// jeśli wszystkie złe → 400 z JSON (frontend to pokaże userowi)
+		if (valid.length === 0) {
+			res.status(400).json({
+				ok: false,
+				error: "No valid files",
+				received: files.length,
+				rejected: invalidErrors.length,
+				errors: invalidErrors,
+			});
 			return;
 		}
 
+		const isMulti = valid.length > 1;
+
+		// CORS: pozwól frontendowi czytać nasze headery
+		res.setHeader(
+			"Access-Control-Expose-Headers",
+			"Content-Disposition,Content-Type,X-Compression-Summary"
+		);
+
+		if (!isMulti) {
+			const f = valid[0];
+
+			let outBuf: Buffer;
+			let outType: string;
+
+			if (isSvgFile(f)) {
+				const r = await compressSvg(f.buffer);
+				outBuf = r.out;
+				outType = r.contentType;
+			} else {
+				const r = await compressRaster(f.buffer, f.contentType, preferFormat, {
+					quality: Number.isFinite(quality)
+						? Math.min(100, Math.max(1, quality))
+						: 80,
+					maxWidth,
+					keepMetadata,
+					lossless,
+					skipIfBigger,
+				});
+				outBuf = r.out;
+				outType = r.contentType;
+			}
+
+			const base = requestedName
+				? sanitizeName(stripExt(requestedName))
+				: sanitizeName(stripExt(f.filename));
+			const ext = guessTargetExt(
+				preferFormat,
+				f.filename,
+				outType || f.contentType
+			);
+			const downloadFilename = `${base}.${ext}`;
+
+			const rep: FileReport = {
+				inputName: f.filename,
+				inputType: f.contentType,
+				inputBytes: f.buffer.length,
+				ok: true,
+				outputName: downloadFilename,
+				outputType: outType,
+				outputBytes: outBuf.length,
+				savedBytes: f.buffer.length - outBuf.length,
+			};
+			reports.push(rep);
+
+			const summary: CompressionSummary = {
+				ok: invalidErrors.length === 0,
+				received: files.length,
+				accepted: valid.length,
+				rejected: invalidErrors.length,
+				processed: 1,
+				errorCount: invalidErrors.length,
+				totalInputBytes,
+				totalOutputBytes: outBuf.length,
+				totalSavedBytes: totalInputBytes - outBuf.length,
+				outputKind: "single",
+				outputFilename: downloadFilename,
+				errors: invalidErrors,
+			};
+
+			res.setHeader("X-Compression-Summary", JSON.stringify(summary));
+			res.setHeader("Content-Type", outType || "application/octet-stream");
+			res.setHeader(
+				"Content-Disposition",
+				buildContentDisposition(downloadFilename)
+			);
+
+			res.status(200).send(outBuf);
+			return;
+		}
+
+		// MULTI → ZIP
+		const zipNameBase = requestedName
+			? sanitizeName(stripExt(requestedName))
+			: "compressed";
+		const zipFilename = `${zipNameBase}.zip`;
+
+		const summaryBase: Omit<
+			CompressionSummary,
+			"totalOutputBytes" | "totalSavedBytes" | "ok"
+		> = {
+			received: files.length,
+			accepted: valid.length,
+			rejected: invalidErrors.length,
+			processed: 0,
+			errorCount: invalidErrors.length,
+			totalInputBytes,
+			outputKind: "zip",
+			outputFilename: zipFilename,
+			errors: invalidErrors,
+		} as any;
+
 		res.setHeader("Content-Type", "application/zip");
-		setContentDisposition(res, "compressed.zip");
+		res.setHeader("Content-Disposition", buildContentDisposition(zipFilename));
 
 		const archive = archiver("zip", { zlib: { level: 9 } });
-		archive.on("error", () => {
-			res.status(500);
+		archive.on("error", (e) => {
+			console.error("zip error:", e);
+			if (!res.headersSent) res.status(500);
 			res.end();
 		});
 		archive.pipe(res);
 
-		for (const f of files) {
+		let totalOutputBytes = 0;
+		let processed = 0;
+
+		for (const f of valid) {
 			try {
-				const out = await compressAnyBuffer(
-					f.buffer,
+				let outBuf: Buffer;
+				let outType: string;
+
+				if (isSvgFile(f)) {
+					const r = await compressSvg(f.buffer);
+					outBuf = r.out;
+					outType = r.contentType;
+				} else {
+					const r = await compressRaster(f.buffer, f.contentType, preferFormat, {
+						quality: Number.isFinite(quality)
+							? Math.min(100, Math.max(1, quality))
+							: 80,
+						maxWidth,
+						keepMetadata,
+						lossless,
+						skipIfBigger,
+					});
+					outBuf = r.out;
+					outType = r.contentType;
+				}
+
+				const base = sanitizeName(stripExt(f.filename));
+				const ext = guessTargetExt(
+					preferFormat,
 					f.filename,
-					f.contentType,
-					common
+					outType || f.contentType
 				);
-				archive.append(out.buffer, { name: out.filename });
-			} catch (e) {
-				const msg = `Failed to process ${f.filename}: ${(e as Error).message}\n`;
-				archive.append(Buffer.from(msg, "utf-8"), {
+				const outName = `${base}.${ext}`;
+
+				archive.append(outBuf, { name: outName });
+
+				reports.push({
+					inputName: f.filename,
+					inputType: f.contentType,
+					inputBytes: f.buffer.length,
+					ok: true,
+					outputName: outName,
+					outputType: outType,
+					outputBytes: outBuf.length,
+					savedBytes: f.buffer.length - outBuf.length,
+				});
+
+				totalOutputBytes += outBuf.length;
+				processed += 1;
+			} catch (e: any) {
+				const reason = e?.message || "Compression failed";
+				reports.push({
+					inputName: f.filename,
+					inputType: f.contentType,
+					inputBytes: f.buffer.length,
+					ok: false,
+					reason,
+				});
+
+				// zachowaj też .error.txt (przydatne)
+				archive.append(Buffer.from(reason, "utf-8"), {
 					name: `${sanitizeName(f.filename)}.error.txt`,
 				});
 			}
 		}
+
+		// pełny raport w zip
+		archive.append(Buffer.from(JSON.stringify(reports, null, 2), "utf-8"), {
+			name: "report.json",
+		});
+
+		const summary: CompressionSummary = {
+			ok: invalidErrors.length === 0 && reports.every((r) => r.ok),
+			...summaryBase,
+			processed,
+			totalOutputBytes,
+			totalSavedBytes: totalInputBytes - totalOutputBytes,
+		};
+
+		// małe podsumowanie w headerze
+		res.setHeader("X-Compression-Summary", JSON.stringify(summary));
 
 		await archive.finalize();
 	} catch (err: any) {
 		console.error(err);
 		res
 			.status(500)
-			.json({ error: "Image compression failed", details: err?.message });
+			.json({
+				ok: false,
+				error: "Image compression failed",
+				details: err?.message,
+			});
 	}
 }

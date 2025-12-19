@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
-import { Icon } from "../../../../../../ui/Icon";
 import { useClickOutside } from "../../../../../../hooks/useClickOutside";
 import { NewTemplateForm } from "./NewTemplateForm";
+import { IconButton } from "../../../../../../ui/IconButton";
 
 export const CreateNewTemplate = () => {
 	const ref = useRef<HTMLDivElement | null>(null);
@@ -14,9 +14,14 @@ export const CreateNewTemplate = () => {
 
 	return (
 		<div ref={ref} className="flex items-center">
-			<button onClick={showDropDown} className="cursor-pointer">
-				<Icon type="rectangle" className="text-lg" />
-			</button>
+			<IconButton
+				icon="rectangle"
+				text="Add Template"
+				className="text-lg"
+				onClick={showDropDown}
+				tooltipPosition="right"
+				tooltipOffsetClass="mt-3"
+			/>
 
 			{isOpen && <NewTemplateForm onHideForm={showDropDown} />}
 		</div>

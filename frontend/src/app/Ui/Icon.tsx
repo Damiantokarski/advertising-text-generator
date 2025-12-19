@@ -1,94 +1,61 @@
 import { memo, type SVGProps } from "react";
 import type { IconType as ReactIconComponent } from "react-icons";
+
 import {
-	// wyrównanie tekstu
-	TbAlignCenter,
-	TbAlignJustified,
-	TbAlignLeft,
-	TbAlignRight,
-
-	// strzałki wypełnione
-	TbCaretDownFilled,
-	TbCaretLeftFilled,
-	TbCaretRightFilled,
-	TbCaretUpFilled,
-
-	// obracanie i przekształcanie
-	TbFlipHorizontal,
-	TbFlipVertical,
-	TbLetterSpacing,
-	TbLineHeight,
-	TbRotate,
-	TbChartPpf,
-
-	// wielkość tekstu
-	TbH1,
-	TbH2,
-	TbH3,
-	TbH4,
-	TbH5,
-	TbH6,
-	TbTextSize,
-	TbUnderline,
-
-	//
-	TbLetterT,
-	TbLetterH,
-	TbLetterW,
-	TbLetterX,
-	TbLetterY,
-
-	// trmplate
-	TbCrop11,
-	TbSquares,
-
-	// index
-	TbStackPop,
-	TbStackPush,
-
-	// udostępnianie linku
-	TbLink,
-	TbBrandAdobePhotoshop,
-
-	// zamykanie/wylogowanie
-	TbLogout,
-
-	// kolory
-	TbPalette,
-
-	// widoczność
-	TbEye,
-	TbEyeClosed,
-	TbLock,
-	TbLockOpen,
-
-	//edycja
-	TbPencil,
-	TbTrash,
-	TbUpload,
-	TbX,
-	TbZoom,
-	TbPlus,
-	TbMinus,
-	TbCloudDown,
-
-	// mode
-	TbSunHigh,
-	TbMoon,
-	TbDownload,
-	TbHomeMove,
-} from "react-icons/tb";
+	PiAngle, // angle
+	PiArrowClockwise, //rorate
+	PiArrowsOutLineVerticalFill, // space vertical
+	PiArrowsOutLineHorizontal, // space horizontal
+	PiBoxArrowDown, // save
+	PiCaretDown, // arrow down
+	PiCaretRight, // arrow right
+	PiCaretLeft, // arrow left
+	PiCaretUp, // arrow up
+	PiEye, //eye
+	PiEyeClosed, // close eye
+	PiHouse, //home
+	PiLinkSimple, //link
+	PiLockSimple, //lock
+	PiLockSimpleOpen, //lock open
+	PiMagnifyingGlass, // search
+	PiPencilSimple, // pencil
+	PiPlus, // add
+	PiMinus,
+	PiRectangle, // template
+	PiSignOut, // logout
+	PiSun, // sun
+	PiMoon, // moon
+	PiTextAlignCenter, //center
+	PiTextAlignJustify, //justify
+	PiTextAlignLeft, //left
+	PiTextAlignRight, //right
+	PiTextHOne,
+	PiTextHTwo,
+	PiTextHThree,
+	PiTextHFour,
+	PiTextHFive,
+	PiTextHSix,
+	PiTextUnderline,
+	PiTextT,
+	PiX, //close
+	PiTextAa, // font
+	PiTrash, // trash
+	PiFileArrowUpDuotone, //upload file
+	PiTextH, // height
+	PiCloudArrowDown, // cloud
+	PiSelectionBackground,
+	PiSelectionForeground,
+	PiFlipHorizontal,
+	PiFlipVertical,
+} from "react-icons/pi";
 
 const IconType = {
 	TextLeft: "textLeft",
 	TextRight: "textRight",
 	TextCenter: "textCenter",
 	TextJustify: "textJustify",
-	Width: "width",
-	Height: "height",
-	XPos: "xPos",
-	YPos: "yPos",
-	Palette: "palette",
+
+	Header: "header",
 
 	ArrowDown: "arrowDown",
 	ArrowLeft: "arrowLeft",
@@ -145,67 +112,62 @@ interface IconProps extends SVGProps<SVGElement> {
 	type: IconType;
 }
 const ICON_MAP: Record<IconType, ReactIconComponent> = {
-	[IconType.TextLeft]: TbAlignLeft,
-	[IconType.TextRight]: TbAlignRight,
-	[IconType.TextCenter]: TbAlignCenter,
-	[IconType.TextJustify]: TbAlignJustified,
+	[IconType.TextLeft]: PiTextAlignLeft,
+	[IconType.TextRight]: PiTextAlignRight,
+	[IconType.TextCenter]: PiTextAlignCenter,
+	[IconType.TextJustify]: PiTextAlignJustify,
 
-	[IconType.ArrowDown]: TbCaretDownFilled,
-	[IconType.ArrowLeft]: TbCaretLeftFilled,
-	[IconType.ArrowRight]: TbCaretRightFilled,
-	[IconType.ArrowUp]: TbCaretUpFilled,
+	[IconType.ArrowDown]: PiCaretDown,
+	[IconType.ArrowLeft]: PiCaretLeft,
+	[IconType.ArrowRight]: PiCaretRight,
+	[IconType.ArrowUp]: PiCaretUp,
 
-	[IconType.TextSize]: TbTextSize,
-	[IconType.Palette]: TbPalette,
+	[IconType.TextSize]: PiTextAa,
 
-	[IconType.Text]: TbLetterT,
-	[IconType.Width]: TbLetterW,
-	[IconType.Height]: TbLetterH,
-	[IconType.XPos]: TbLetterX,
-	[IconType.YPos]: TbLetterY,
-	[IconType.Rectangle]: TbCrop11,
+	[IconType.Text]: PiTextT,
+	[IconType.Header]: PiTextH,
+	[IconType.Rectangle]: PiRectangle,
 
-	[IconType.Eye]: TbEye,
-	[IconType.EyeClosed]: TbEyeClosed,
-	[IconType.LockClosed]: TbLock,
-	[IconType.LockOpen]: TbLockOpen,
-	[IconType.Close]: TbX,
+	[IconType.Eye]: PiEye,
+	[IconType.EyeClosed]: PiEyeClosed,
+	[IconType.LockClosed]: PiLockSimple,
+	[IconType.LockOpen]: PiLockSimpleOpen,
+	[IconType.Close]: PiX,
 
-	[IconType.Trash]: TbTrash,
-	[IconType.Angle]: TbChartPpf,
+	[IconType.Trash]: PiTrash,
+	[IconType.Angle]: PiAngle,
 
-	[IconType.FlipHorizontal]: TbFlipHorizontal,
-	[IconType.FlipVertical]: TbFlipVertical,
-	[IconType.Rotate]: TbRotate,
-	[IconType.LineHeight]: TbLineHeight,
-	[IconType.LetterSpacing]: TbLetterSpacing,
-	[IconType.Psd]: TbBrandAdobePhotoshop,
+	[IconType.FlipHorizontal]: PiFlipHorizontal,
+	[IconType.FlipVertical]: PiFlipVertical,
+	[IconType.Rotate]: PiArrowClockwise,
+	[IconType.LineHeight]: PiArrowsOutLineVerticalFill,
+	[IconType.LetterSpacing]: PiArrowsOutLineHorizontal,
+	[IconType.Psd]: PiFileArrowUpDuotone,
 
-	[IconType.Save]: TbDownload,
-	[IconType.Pencil]: TbPencil,
-	[IconType.MagnifyingGlass]: TbZoom,
-	[IconType.Plus]: TbPlus,
-	[IconType.Minus]: TbMinus,
+	[IconType.Save]: PiBoxArrowDown,
+	[IconType.Pencil]: PiPencilSimple,
+	[IconType.MagnifyingGlass]: PiMagnifyingGlass,
+	[IconType.Plus]: PiPlus,
+	[IconType.Minus]: PiMinus,
 
-	[IconType.Header1]: TbH1,
-	[IconType.Header2]: TbH2,
-	[IconType.Header3]: TbH3,
-	[IconType.Header4]: TbH4,
-	[IconType.Header5]: TbH5,
-	[IconType.Header6]: TbH6,
-	[IconType.TextUnderline]: TbUnderline,
-	[IconType.StackPop]: TbStackPop,
-	[IconType.StackPush]: TbStackPush,
+	[IconType.Header1]: PiTextHOne,
+	[IconType.Header2]: PiTextHTwo,
+	[IconType.Header3]: PiTextHThree,
+	[IconType.Header4]: PiTextHFour,
+	[IconType.Header5]: PiTextHFive,
+	[IconType.Header6]: PiTextHSix,
+	[IconType.TextUnderline]: PiTextUnderline,
+	[IconType.StackPop]: PiSelectionBackground,
+	[IconType.StackPush]: PiSelectionForeground,
 
-	[IconType.Link]: TbLink,
-	[IconType.Copy]: TbSquares,
-	[IconType.CloudDown]: TbCloudDown,
+	[IconType.Copy]: PiLinkSimple,
+	[IconType.CloudDown]: PiCloudArrowDown,
 
-	[IconType.SunHigh]: TbSunHigh,
-	[IconType.Moon]: TbMoon,
-	[IconType.HomeMove]: TbHomeMove,
+	[IconType.SunHigh]: PiSun,
+	[IconType.Moon]: PiMoon,
+	[IconType.HomeMove]: PiHouse,
 
-	[IconType.Logout]: TbLogout,
+	[IconType.Logout]: PiSignOut,
 };
 
 const IconComponent = ({ type, ...rest }: IconProps) => {

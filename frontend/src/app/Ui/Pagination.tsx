@@ -37,7 +37,7 @@ export const Pagination = ({
 	};
 
 	return (
-		<div className="absolute bottom-8 right-8  flex items-center gap-2">
+		<div className="absolute top-8 right-8 flex items-center gap-2">
 			<button
 				onClick={prevPage}
 				disabled={page <= 1}
@@ -76,7 +76,7 @@ export const Pagination = ({
 				<Icon type={showPageSize ? "arrowDown" : "arrowUp"} />
 			</button>
 			{showPageSize && (
-				<div className=" flex flex-col bg-surface z-10 absolute right-0 -top-33  shadow rounded w-20  border border-primary-blue-sky">
+				<div className=" flex flex-col bg-surface z-10 absolute right-0 top-8   shadow rounded w-20  border border-primary-blue-sky">
 					{[5, 10, 20, 50].map((n) => (
 						<button
 							key={n}
