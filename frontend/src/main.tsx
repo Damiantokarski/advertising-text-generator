@@ -14,52 +14,55 @@ import { PublicRoute } from "./app/auth/PublicRoute.tsx";
 import { LoginPage } from "./app/view/login/LoginPage.tsx";
 import { RegisterPage } from "./app/view/register/RegisterPage.tsx";
 import { Dashboard } from "./app/view/dashboard/Dashboard.tsx";
+import { ThemeProvider } from "./app/Ui/ThemeProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
-		<AuthProvider>
-			<Provider store={store}>
-				<ModalProvider>
-					<BrowserRouter>
-						<Routes>
-							<Route
-								path="/login"
-								element={
-									<PublicRoute>
-										<LoginPage />
-									</PublicRoute>
-								}
-							/>
-							<Route
-								path="/register"
-								element={
-									<PublicRoute>
-										<RegisterPage />
-									</PublicRoute>
-								}
-							/>
-							<Route
-								path="/"
-								element={
-									<ProtectedRoute>
-										<Dashboard />
-									</ProtectedRoute>
-								}
-							/>
-							<Route
-								path="/text-generator/project/:id"
-								element={
-									<ProtectedRoute>
-										<Generator />
-									</ProtectedRoute>
-								}
-							/>
-							<Route path="*" element={<Navigate to="/" replace />} />
-						</Routes>
-						<Toaster {...toasterConfig} />
-					</BrowserRouter>
-				</ModalProvider>
-			</Provider>
-		</AuthProvider>
+		<ThemeProvider>
+			<AuthProvider>
+				<Provider store={store}>
+					<ModalProvider>
+						<BrowserRouter>
+							<Routes>
+								<Route
+									path="/login"
+									element={
+										<PublicRoute>
+											<LoginPage />
+										</PublicRoute>
+									}
+								/>
+								<Route
+									path="/register"
+									element={
+										<PublicRoute>
+											<RegisterPage />
+										</PublicRoute>
+									}
+								/>
+								<Route
+									path="/"
+									element={
+										<ProtectedRoute>
+											<Dashboard />
+										</ProtectedRoute>
+									}
+								/>
+								<Route
+									path="/text-generator/project/:id"
+									element={
+										<ProtectedRoute>
+											<Generator />
+										</ProtectedRoute>
+									}
+								/>
+								<Route path="*" element={<Navigate to="/" replace />} />
+							</Routes>
+							<Toaster {...toasterConfig} />
+						</BrowserRouter>
+					</ModalProvider>
+				</Provider>
+			</AuthProvider>
+		</ThemeProvider>
 	</StrictMode>
 );

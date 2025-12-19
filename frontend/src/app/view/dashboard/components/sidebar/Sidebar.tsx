@@ -2,13 +2,16 @@ import { createProjectApi } from "../../../../../api/projectsApi";
 import { useAuth } from "../../../../hooks/useAuth";
 import { useModal } from "../../../../hooks/useModal";
 import { Icon } from "../../../../ui/Icon";
+import { IconButton } from "../../../../ui/IconButton";
 import { ProjectForm, type ProjectFormData } from "../../../../ui/ProjectForm";
 import { useProjects } from "../projects/hooks/useProjects";
+import { useTheme } from "../../../../hooks/useTheme";
 
 export const Sidebar = () => {
 	const { logout, user } = useAuth();
 	const { openModal, closeModal } = useModal();
 	const { refetch } = useProjects();
+	const { theme, toggleTheme } = useTheme();
 
 	const handleNewProject = () => {
 		openModal({
@@ -44,6 +47,14 @@ export const Sidebar = () => {
 				</button>
 			</div>
 			<div className="flex items-center gap-3">
+				<IconButton
+					icon={theme == "dark" ? "sunHigh" : "moon"}
+					text="Toggle theme (dark/light)"
+					className="text-lg"
+					onClick={toggleTheme}
+					tooltipPosition="right"
+					tooltipOffsetClass="mt-3"
+				/>
 				<div className="bg-primary-blue-hover/10 w-10 h-10 rounded-full flex items-center justify-center">
 					<p className="font-bold text-primary-blue">{user?.name.slice(0, 1)}</p>
 				</div>
