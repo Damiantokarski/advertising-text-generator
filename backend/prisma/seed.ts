@@ -7,8 +7,8 @@ async function main() {
 
     // Clear existing data (be careful in production!)
     await prisma.session.deleteMany({});
-    await prisma.textNode.deleteMany({});
-    await prisma.bannerNode.deleteMany({});
+    await prisma.text.deleteMany({});
+    await prisma.template.deleteMany({});
     await prisma.projectSettings.deleteMany({});
     await prisma.project.deleteMany({});
     await prisma.user.deleteMany({});
@@ -34,7 +34,7 @@ async function main() {
     // Create project with content for userWithProjects
     const project = await prisma.project.create({
         data: {
-            projectId: uuidv4(),
+            id: uuidv4(),
             name: "Sample Design Project",
             job: "JOB-001",
             title: "Sample Design",
@@ -44,11 +44,10 @@ async function main() {
     });
 
     // Add text nodes
-    await prisma.textNode.create({
+    await prisma.text.create({
         data: {
             projectId: project.id,
-            elementId: "Text-001",
-            name: "Heading",
+            id: "Text-001",
             type: "text",
             locked: false,
             display: true,
@@ -73,11 +72,10 @@ async function main() {
         },
     });
 
-    await prisma.textNode.create({
+    await prisma.text.create({
         data: {
             projectId: project.id,
-            elementId: "Text-002",
-            name: "Subtitle",
+            id: "Text-002",
             type: "text",
             locked: false,
             display: true,
@@ -103,12 +101,11 @@ async function main() {
     });
 
     // Add banner
-    await prisma.bannerNode.create({
+    await prisma.template.create({
         data: {
             projectId: project.id,
-            elementId: "Banner-001",
-            name: "Main Banner",
-            type: "banner",
+            id: "Template-001",
+            type: "template",
             locked: false,
             display: true,
             value: {
@@ -157,7 +154,7 @@ async function main() {
     // Create multiple empty projects for isolation testing
     await prisma.project.create({
         data: {
-            projectId: uuidv4(),
+            id: uuidv4(),
             name: "Other User Project 1",
             job: "OTHER-001",
             title: "Should Not Be Visible",
@@ -168,7 +165,7 @@ async function main() {
 
     await prisma.project.create({
         data: {
-            projectId: uuidv4(),
+            id: uuidv4(),
             name: "Other User Project 2",
             job: "OTHER-002",
             title: "Also Should Not Be Visible",
@@ -179,7 +176,7 @@ async function main() {
 
     await prisma.project.create({
         data: {
-            projectId: uuidv4(),
+            id: uuidv4(),
             name: "Other User Project 3",
             job: "OTHER-003",
             title: "Private Project",

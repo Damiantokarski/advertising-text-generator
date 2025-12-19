@@ -37,7 +37,7 @@ export const Pagination = ({
 	};
 
 	return (
-		<div className="absolute bottom-4 right-8  flex items-center gap-2">
+		<div className="absolute bottom-8 right-8  flex items-center gap-2">
 			<button
 				onClick={prevPage}
 				disabled={page <= 1}

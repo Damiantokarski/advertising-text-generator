@@ -1,6 +1,6 @@
-import * as auth from "../../api/auth";
+import * as auth from "../../api/authApi";
 import { useEffect, useState } from "react";
-import type { Session, RegisterResult } from "../../api/auth";
+import type { Session, RegisterResult } from "../../api/authApi";
 import { AuthContext } from "../hooks/useAuth";
 
 

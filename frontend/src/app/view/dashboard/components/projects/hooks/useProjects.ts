@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { getProjectsApi } from "../../../../../api/projectsApi";
-
+import { getProjectsApi } from "../../../../../../api/projectsApi";
 
 export interface ProjectItem {
 	projectId: string;

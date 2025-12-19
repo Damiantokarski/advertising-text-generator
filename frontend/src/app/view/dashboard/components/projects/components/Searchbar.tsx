@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Icon } from "../../../../ui/Icon";
+import { Icon } from "../../../../../ui/Icon";
 
 interface SearchbarProps {
 	placeholder?: string;
@@ -24,7 +24,7 @@ export const Searchbar = ({
 	};
 
 	return (
-		<div className="absolute top-12 right-8 border border-primary-blue-sky px-3 py-1.5 rounded-md flex items-center bg-main">
+		<div className="border border-primary-blue-sky px-3 py-1.5 rounded-md flex items-center bg-main max-w-xs">
 			<Icon type="magnifyingGlass" className="text-primary-blue mr-2 " />
 			<input
 				placeholder={placeholder}

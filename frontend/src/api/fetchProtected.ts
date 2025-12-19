@@ -1,5 +1,5 @@
 // Wrapper to get endpoints that require JWT protection
-import { refreshAccessToken } from "./auth";
+import { refreshAccessToken } from "./authApi";
 
 export const fetchProtected = async (url: string, options: RequestInit = {}): Promise<Response> => {
     const withCredentials: RequestInit = { ...options, credentials: "include" };
