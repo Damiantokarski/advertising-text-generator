@@ -17,7 +17,7 @@ export const CreateNewTemplate = () => {
 			<IconButton
 				icon="rectangle"
 				text="Add Template"
-				className="text-lg"
+				className="text-lg dark:text-white"
 				onClick={showDropDown}
 				tooltipPosition="right"
 				tooltipOffsetClass="mt-3"

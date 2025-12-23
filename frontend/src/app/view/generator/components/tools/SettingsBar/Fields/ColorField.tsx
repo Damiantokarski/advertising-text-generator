@@ -68,7 +68,7 @@ export const ColorField = () => {
 			</div>
 
 			{isOpen && !disabled && (
-				<div className="fixed p-4 right-80 bg-surface -mt-8 rounded-lg shadow custom-layout ">
+				<div className="fixed p-4 right-80 bg-surface -mt-8 rounded-lg shadow custom-layout dark:bg-dark-section ">
 					<HexAlphaColorPicker color={color} onChange={handleSelectColor} />
 				</div>
 			)}

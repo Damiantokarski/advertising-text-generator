@@ -55,15 +55,15 @@ const Modal = ({
 			<div className="absolute inset-0 bg-gray-600/40" onClick={onClose} />
 
 			<div
-				className={`relative z-10 w-full rounded-lg bg-white shadow-md p-6 ${className ?? "max-w-lg"}`}
+				className={`relative z-10 w-full rounded-lg bg-white shadow-md p-6 dark:bg-dark-section ${className ?? "max-w-lg"}`}
 			>
 				<div className="flex justify-between items-center mb-4">
-					<h2 className="text-2xl font-bold text-primary-ocean">
+					<h2 className="text-2xl font-bold dark:text-primary-blue-hover">
 						{title ?? "Modal"}
 					</h2>
 					<button
 						onClick={onClose}
-						className="text-gray-500 hover:text-red-500 text-xl leading-none cursor-pointer"
+						className="text-gray-500 hover:text-red-500 text-xl leading-none cursor-pointer dark:text-white "
 					>
 						<Icon type="close" />
 					</button>

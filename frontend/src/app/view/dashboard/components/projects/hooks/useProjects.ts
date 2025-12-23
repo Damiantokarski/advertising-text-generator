@@ -3,7 +3,7 @@ import { getProjectsApi } from "../../../../../../api/projectsApi";
 
 export interface ProjectItem {
 	projectId: string;
-	id: number;
+	id: string;
 	job: string;
 	title: string;
 	name: string;

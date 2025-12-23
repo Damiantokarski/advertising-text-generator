@@ -14,7 +14,7 @@ export const CanvaIndex = () => {
 			<IconButton
 				icon="stackPop"
 				text="Move Up"
-				className="text-lg"
+				className="text-lg dark:text-white"
 				onClick={() => handleCanvaIndex(1)}
 				tooltipPosition="right"
 				tooltipOffsetClass="mt-3"
@@ -22,7 +22,7 @@ export const CanvaIndex = () => {
 			<IconButton
 				icon="stackPush"
 				text="Move Down"
-				className="text-lg"
+				className="text-lg dark:text-white"
 				onClick={() => handleCanvaIndex(-1)}
 				tooltipPosition="right"
 				tooltipOffsetClass="mt-3"

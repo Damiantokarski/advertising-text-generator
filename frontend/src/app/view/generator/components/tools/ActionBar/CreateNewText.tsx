@@ -10,7 +10,7 @@ export const CreateNewText = () => {
 		<IconButton
 			icon="text"
 			text="Add Text"
-			className="text-lg"
+			className="text-lg dark:text-white"
 			onClick={handleNewText}
 			tooltipPosition="right"
 			tooltipOffsetClass="mt-3"

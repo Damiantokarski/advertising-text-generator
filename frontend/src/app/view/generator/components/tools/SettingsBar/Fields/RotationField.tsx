@@ -67,21 +67,21 @@ export const RotationField = () => {
 			<div className="w-full flex gap-1 text-xs">
 				<button
 					onClick={onRightRotate}
-					className=" border border-primary-blue w-full flex justify-center items-center rounded-tl rounded-bl cursor-pointer hover:bg-primary-blue-sky/20 transition-colors disabled:border-gray-200 disabled:text-gray-200"
+					className=" border border-primary-blue w-full flex justify-center items-center rounded-tl rounded-bl cursor-pointer hover:bg-primary-blue-sky/20 transition-colors bg-white dark:bg-primary-blue-hover/40 disabled:border-gray-200 dark:text-white disabled:text-gray-200"
 					disabled={disabled || selectedElements.length === 0}
 				>
 					<Icon type="rotate" className="text-xs" />
 				</button>
 				<button
 					onClick={onHorizontal}
-					className=" border border-primary-blue w-full flex justify-center items-center cursor-pointer hover:bg-primary-blue-sky/20 transition-colors disabled:border-gray-200 disabled:text-gray-200"
+					className=" border border-primary-blue w-full flex justify-center items-center cursor-pointer hover:bg-primary-blue-sky/20 transition-colors disabled:border-gray-200 dark:text-white bg-white dark:bg-primary-blue-hover/40 disabled:text-gray-200"
 					disabled={disabled || selectedElements.length === 0}
 				>
 					<Icon type="flipHorizontal" className="text-xs" />
 				</button>
 				<button
 					onClick={onVertical}
-					className=" border border-primary-blue w-full flex justify-center items-center rounded-tr rounded-br cursor-pointer hover:bg-primary-blue-sky/20 transition-colors disabled:border-gray-200 disabled:text-gray-200"
+					className=" border border-primary-blue w-full flex justify-center items-center rounded-tr rounded-br cursor-pointer hover:bg-primary-blue-sky/20 transition-colors bg-white dark:bg-primary-blue-hover/40 dark:text-white disabled:border-gray-200 disabled:text-gray-200"
 					disabled={disabled || selectedElements.length === 0}
 				>
 					<Icon type="flipVertical" className="text-xs" />

@@ -42,13 +42,13 @@ export const ActionBar = ({ scale, onChange, barsState }: ToolsProps) => {
 
 	return (
 		<section
-			className={`fixed top-0 flex  items-center justify-between gap-4 p-4 shadow  bg-surface m-4 rounded-sm w-full  transition-all ${left} ${maxWidth}`}
+			className={`fixed top-0 flex  items-center justify-between gap-4 p-4 shadow  bg-surface m-4 rounded-sm w-full transition-all dark:bg-dark-section ${left} ${maxWidth}`}
 		>
 			<div className="flex items-center gap-10 justify-center">
 				<IconButton
 					icon="homeMove"
 					text="Home"
-					className="text-lg"
+					className="text-lg dark:text-white"
 					onClick={handleNavigate}
 					tooltipPosition="right"
 					tooltipOffsetClass="mt-3"

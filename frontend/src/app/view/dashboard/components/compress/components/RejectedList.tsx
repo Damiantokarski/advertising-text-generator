@@ -13,7 +13,7 @@ interface RejectedListProps {
 
 export const RejectedList = ({ rejected }: RejectedListProps) => {
 	return (
-		<div className="rounded-md border border-red-200 bg-red-50 p-3 max-h-full overflow-y-auto">
+		<div className="rounded-md border border-red-200 bg-red-200 p-3 max-h-full overflow-y-auto">
 			<p className="text-sm font-semibold text-red-700">
 				Rejected files ({rejected.length})
 			</p>

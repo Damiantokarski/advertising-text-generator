@@ -2,6 +2,8 @@ import express from "express";
 import {
 	createProjectService,
 	deleteProjectItemsService,
+	deleteProjectService,
+	editProjectService,
 	getProject,
 	getProjectsService,
 	updateProjectService,
@@ -16,7 +18,6 @@ router.use(requireAccessToken);
 
 router.post("/create", async (req: AuthenticatedRequest, res) => {
 	try {
-		console.log("Request body:", req.body);
 		const project = await createProjectService(req.user!, req.body);
 		res.status(201).json(project);
 	} catch (e: any) {
@@ -34,7 +35,8 @@ router.post("/create", async (req: AuthenticatedRequest, res) => {
 router.get("/", async (req: AuthenticatedRequest, res) => {
 	try {
 		const page = Number(req.query.page) || 1;
-		const pageSize = Number(req.query.pageSize) || Number(req.query.limit) || 10;
+		const pageSize =
+			Number(req.query.pageSize) || Number(req.query.limit) || 10;
 
 		const q =
 			typeof req.query.q === "string" && req.query.q.trim() !== ""
@@ -56,8 +58,12 @@ router.get("/", async (req: AuthenticatedRequest, res) => {
 		const formatted = (Array.isArray(data.projects) ? data.projects : []).map(
 			(p: any) => ({
 				...p,
-				createdAt: p.createdAt ? dateFormatter.format(new Date(p.createdAt)) : null,
-				updatedAt: p.updatedAt ? dateFormatter.format(new Date(p.updatedAt)) : null,
+				createdAt: p.createdAt
+					? dateFormatter.format(new Date(p.createdAt))
+					: null,
+				updatedAt: p.updatedAt
+					? dateFormatter.format(new Date(p.updatedAt))
+					: null,
 			})
 		);
 
@@ -110,6 +116,28 @@ router.put("/:id/update", async (req: AuthenticatedRequest, res) => {
 		});
 	}
 });
+router.patch("/:id/edit", async (req: AuthenticatedRequest, res) => {
+	try {
+		const id = req.params.id;
+		const { data } = req.body;
+		console.log(data);
+
+		const result = await editProjectService(id, req.user!, data);
+
+		if (!result.status) {
+			// dobierz kod: 404 gdy nie znaleziono, 400 gdy walidacja, 403 gdy brak dostępu
+			return res.status(400).json({ error: result.message });
+		}
+
+		return res.status(200).json({ message: result.message });
+	} catch (e: any) {
+		console.error(`PATCH /api/projects/${req.params.id}/edit error:`, e);
+		return res.status(500).json({
+			error: "Failed to update project",
+			message: e?.message ?? String(e),
+		});
+	}
+});
 
 router.delete("/:id/items/delete", async (req: AuthenticatedRequest, res) => {
 	try {
@@ -121,6 +149,21 @@ router.delete("/:id/items/delete", async (req: AuthenticatedRequest, res) => {
 		console.error(`DELETE /api/projects/${req.params.id}/delete error:`, e);
 		res.status(500).json({
 			error: "Failed to delete selected items",
+			message: e?.message ?? String(e),
+		});
+	}
+});
+
+router.delete("/:id/delete", async (req: AuthenticatedRequest, res) => {
+	try {
+		const id = req.params.id;
+
+		await deleteProjectService(id, req.user!);
+		res.status(200).json({ message: "Project deleted successfully" });
+	} catch (e: any) {
+		console.error(`DELETE /api/projects/${req.params.id}/delete error:`, e);
+		res.status(500).json({
+			error: "Failed to delete project",
 			message: e?.message ?? String(e),
 		});
 	}

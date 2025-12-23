@@ -12,7 +12,7 @@ export const InputSuffix = ({
 }: InputSuffixProps) => (
   <span
     className={clsx(
-      "text-xs flex items-center ml-auto transition-transform duration-200",
+      "text-xs flex items-center ml-auto transition-transform duration-200 dark:text-white",
       rotated ? "rotate-180" : "rotate-0"
     )}
   >

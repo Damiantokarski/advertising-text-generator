@@ -15,13 +15,13 @@ export const getProjectsService = async (
 			userId: user.id,
 			...(q
 				? {
-					OR: [
-						{ name: { contains: q } },
-						{ job: { contains: q } },
-						{ title: { contains: q } },
-						{ projectId: { contains: q } },
-					],
-				}
+						OR: [
+							{ name: { contains: q } },
+							{ job: { contains: q } },
+							{ title: { contains: q } },
+							{ projectId: { contains: q } },
+						],
+				  }
 				: {}),
 		};
 
@@ -195,5 +195,51 @@ export const deleteProjectItemsService = async (
 		return { status: true, message: "Items deleted successfully" };
 	} catch (error) {
 		return { status: false, message: "Failed to delete items" };
+	}
+};
+
+export const editProjectService = async (
+	id: string,
+	user: TokenPayload,
+	data: { name: string; task: string; title: string; priority: string }
+) => {
+	try {
+		const owned = await prisma.project.findFirst({
+			where: { id, userId: user.id },
+		});
+		if (!owned) {
+			return { status: false, message: "Project not found" };
+		}
+		const { name, task, title, priority } = data;
+
+		await prisma.project.updateMany({
+			where: { id, userId: user.id },
+			data: {
+				name,
+				job: task,
+				title,
+				status: priority,
+			},
+		});
+		return { status: true, message: "Project updated successfully" };
+	} catch (error) {
+		return { status: false, message: "Failed to update project" };
+	}
+};
+export const deleteProjectService = async (id: string, user: TokenPayload) => {
+	try {
+		const owned = await prisma.project.findFirst({
+			where: { id, userId: user.id },
+		});
+		if (!owned) {
+			return { status: false, message: "Project not found" };
+		}
+		await prisma.project.deleteMany({
+			where: { id, userId: user.id },
+		});
+
+		return { status: true, message: "Project deleted successfully" };
+	} catch (error) {
+		return { status: false, message: "Failed to delete project" };
 	}
 };

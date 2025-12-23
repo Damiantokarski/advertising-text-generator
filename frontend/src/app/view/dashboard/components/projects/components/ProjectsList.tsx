@@ -4,9 +4,10 @@ import ListItem from "../../../../../ui/List/ListItem";
 
 interface ProjectListProps {
 	isProjects: boolean;
+	refetch: () => void;
 	projects: {
 		projectId: string;
-		id: number;
+		id: string;
 		job: string;
 		title: string;
 		name: string;
@@ -15,10 +16,10 @@ interface ProjectListProps {
 	}[];
 }
 
-export const ProjectList = ({ isProjects, projects }: ProjectListProps) => {
+export const ProjectList = ({ isProjects, projects, refetch }: ProjectListProps) => {
 	if (isProjects)
 		return (
-			<p className="text-center text-gray-500 mt-10">No projects available...</p>
+			<p className="text-center text-gray-500 mt-10 dark:text-gray-200">No projects available...</p>
 		);
 
 	return (
@@ -28,7 +29,7 @@ export const ProjectList = ({ isProjects, projects }: ProjectListProps) => {
 		>
 			{projects.map((project) => (
 				<ListItem key={project.id} className=" w-full">
-					<ProjectCard project={project} />
+					<ProjectCard project={project} refetch={refetch} />
 				</ListItem>
 			))}
 		</List>

@@ -31,7 +31,7 @@ export const AlignField = () => {
 				{ALIGN_OPTIONS.map(({ icon, value }) => (
 					<li key={value}>
 						<button
-							className={`p-1.5 rounded-xs  border border-primary-blue-sky cursor-pointer transition-colors disabled:border-gray-200 disabled:text-gray-200 ${current === value ? "bg-primary-blue-sky text-surface" : " hover:bg-primary-blue-sky/20 bg-surface"}`}
+							className={`p-1.5 rounded-xs  border border-primary-blue-sky dark:border-primary-blue-hover cursor-pointer transition-colors disabled:border-gray-200 disabled:text-gray-200 dark:text-white ${current === value ? "bg-primary-blue-sky dark:bg-primary-blue-hover text-surface" : " hover:bg-primary-blue-sky/20 bg-surface dark:bg-primary-blue-hover/40"}`}
 							onClick={() => onSelect(value)}
 							disabled={disabled || selectedElements.length === 0}
 						>

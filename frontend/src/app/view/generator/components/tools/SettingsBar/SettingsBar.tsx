@@ -51,7 +51,7 @@ export const SettingsBar = ({
 
 	return (
 		<FieldWrapper
-			wrapperClass={`fixed z-30  top-0 shadow w-2xs px-8 py-7 flex flex-col bg-surface m-4 rounded-sm h-[calc(100vh-32px)] transition-all ${isOpen ? "right-0" : "-right-66"}`}
+			wrapperClass={`dark:bg-dark-section fixed z-30  top-0 shadow w-2xs px-8 py-7 flex flex-col bg-surface m-4 rounded-sm h-[calc(100vh-32px)] transition-all ${isOpen ? "right-0" : "-right-66"}`}
 		>
 			{isMixed && (
 				<>

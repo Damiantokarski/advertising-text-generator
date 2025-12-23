@@ -25,17 +25,17 @@ export const StageScale = ({
 			<button
 				onClick={zoomIn}
 				disabled={scale >= maxScale}
-				className="cursor-pointer text-secondary-light"
+				className="cursor-pointer dark:text-white"
 			>
 				<Icon type="plus"/>
 			</button>
-			<span className="text-xs text-secondary-light">
+			<span className="text-xs dark:text-white">
 				{(scale * 100).toFixed(0)}%
 			</span>
 			<button
 				onClick={zoomOut}
 				disabled={scale <= minScale}
-				className="cursor-pointer w-fit text-secondary-light"
+				className="cursor-pointer w-fit dark:text-white"
 			>
 				<Icon type="minus"/>
 			</button>

@@ -31,11 +31,10 @@ export const ItemsBar = ({ title, setBarsState, isOpen }: ItemsBarProps) => {
 
 	return (
 		<FieldWrapper
-			title={title ? title + ":" : ""}
-			wrapperClass={`fixed z-30  top-0 shadow w-2xs px-8 py-7 flex flex-col bg-surface m-4 rounded-sm h-[calc(100vh-32px)] transition-all ${isOpen ? "left-0" : "-left-66"}`}
+			wrapperClass={`dark:bg-dark-section fixed z-30  top-0 shadow w-2xs px-8 py-7 flex flex-col bg-surface m-4 rounded-sm h-[calc(100vh-32px)] transition-all dark:text-white ${isOpen ? "left-0" : "-left-66"}`}
 		>
 			<button
-				className={`absolute top-3 right-3 cursor-pointer transition-transform ${isOpen ? "" : "rotate-180"}`}
+				className={`absolute top-3 right-3 cursor-pointer transition-transform dark:text-white ${isOpen ? "" : "rotate-180"}`}
 				onClick={() =>
 					setBarsState((prev) => ({ ...prev, isItemsBarOpen: !prev.isItemsBarOpen }))
 				}

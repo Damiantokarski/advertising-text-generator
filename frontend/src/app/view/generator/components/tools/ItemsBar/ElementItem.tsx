@@ -61,7 +61,7 @@ export const ElementItem = memo(({ id, type }: ElementItemProps) => {
 		<div
 			className={`relative flex justify-between items-center border px-2 rounded py-1 ${
 				editing || selectedElements.includes(id)
-					? "border-primary-blue"
+					? "border-primary-blue dark:border-primary-blue-hover dark:bg-primary-blue-hover/40"
 					: "border-transparent"
 			}`}
 		>
@@ -72,11 +72,11 @@ export const ElementItem = memo(({ id, type }: ElementItemProps) => {
 			>
 				<Icon
 					type={type === "template" ? "rectangle" : "text"}
-					className="text-xs text-secondary-light"
+					className="text-xs"
 				/>
 				<input
 					type="text"
-					className="text-tiny outline-none bg-transparent max-w-32 cursor-pointer text-secondary-light truncate"
+					className="text-tiny outline-none bg-transparent max-w-32 cursor-pointer truncate"
 					value={editing ? val : value.name}
 					readOnly={!editing}
 					onChange={(e) => setVal(e.target.value)}
@@ -88,13 +88,13 @@ export const ElementItem = memo(({ id, type }: ElementItemProps) => {
 				<button onClick={blockElement}>
 					<Icon
 						type={locked ? "lockClosed" : "lockOpen"}
-						className="text-xs text-secondary-light"
+						className="text-xs"
 					/>
 				</button>
 				<button onClick={hideElement}>
 					<Icon
 						type={display ? "eye" : "eyeClosed"}
-						className="text-xs text-secondary-light"
+						className="text-xs"
 					/>
 				</button>
 			</div>

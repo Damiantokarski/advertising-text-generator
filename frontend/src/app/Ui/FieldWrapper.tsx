@@ -17,7 +17,7 @@ export const FieldWrapper = ({
 }: FieldWrapperProps) => {
 	return (
 		<div className={`space-y-1 ${wrapperClass}`} ref={ref}>
-			<span className="text-tiny font-semibold text-secondary-light">{title}</span>
+			<span className="text-tiny font-semibold dark:text-gray-200">{title}</span>
 			{className ? <div className={className}>{children}</div> : children}
 		</div>
 	);

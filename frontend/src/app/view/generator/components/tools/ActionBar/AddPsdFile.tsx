@@ -19,14 +19,14 @@ export const AddPsdFile = () => {
 			<IconButton
 				icon="psd"
 				text="Upload PSD"
-				className="text-lg"
+				className="text-lg dark:text-white"
 				onClick={showDropDown}
 				tooltipPosition="right"
 				tooltipOffsetClass="mt-3"
 			/>
 
 			{isOpen && (
-				<div className="px-4 py-4 bg-surface shadow rounded-sm z-1000 fixed left-100 top-22 text-tiny max-w-48 space-y-1">
+				<div className="px-4 py-4 bg-surface dark:bg-dark-section shadow rounded-sm z-1000 fixed left-100 top-22 text-tiny max-w-48 space-y-1">
 					<Dropzone onFiles={onDrop} accept=".psd" multiple={false} />
 				</div>
 			)}

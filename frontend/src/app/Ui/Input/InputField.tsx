@@ -10,6 +10,6 @@ export const InputField = ({ props, register }: InputFieldProps) => (
 	<input
 		{...props}
 		{...register}
-		className="outline-none w-full bg-transparent "
+		className="outline-none w-full dark:text-white "
 	/>
 );

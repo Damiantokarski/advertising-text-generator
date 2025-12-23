@@ -16,7 +16,7 @@ export const TextField = () => {
 	return (
 		<FieldWrapper title="Text">
 			<textarea
-				className="w-full rounded border border-primary-blue  p-2 text-tiny outline-none min-h-24 max-h-24 disabled:border-gray-200 disabled:text-gray-200"
+				className="w-full rounded border border-primary-blue bg-white dark:text-white dark:bg-primary-blue-hover/40 p-2 text-tiny outline-none min-h-24 max-h-24 disabled:border-gray-200 disabled:text-gray-200"
 				placeholder={disabled ? "Select text to edit" : undefined}
 				value={text}
 				onChange={onChangeText}

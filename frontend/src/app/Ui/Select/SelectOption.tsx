@@ -14,7 +14,7 @@ export const SelectOption = ({
 			onClick={onClick}
 			className={`
         px-3 py-1 cursor-pointer w-full  
-        ${isSelected ? "bg-primary-blue-sky text-surface" : "hover:bg-primary-blue-sky/20"}
+        ${isSelected ? "bg-primary-blue-sky text-white dark:bg-primary-blue-hover" : "hover:bg-primary-blue-sky/20"}
       `}
 		>
 			{value}

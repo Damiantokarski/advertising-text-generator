@@ -1,11 +1,13 @@
 import { type InputHTMLAttributes, type ReactNode, useState } from "react";
-import { InputWrapper } from "./InputWrapper";
+
 import { InputLabel } from "./InputLabel";
+
+import { cva } from "class-variance-authority";
+import type { UseFormRegisterReturn } from "react-hook-form";
+import { InputWrapper } from "./InputWrapper";
 import { InputPrefix } from "./InputPrefix";
 import { InputField } from "./InputField";
 import { InputSuffix } from "./InputSufix";
-import { cva } from "class-variance-authority";
-import type { UseFormRegisterReturn } from "react-hook-form";
 
 type SizeVariant = "small" | "default" | "large";
 
@@ -20,7 +22,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const variants = cva(
-	"has-[:disabled]:border-gray-200 has-[:disabled]:text-gray-200 flex items-center gap-1 bg-surface border border-primary-blue rounded px-3 w-full",
+	"has-[:disabled]:border-gray-200 has-[:disabled]:text-gray-200 flex items-center gap-1 bg-surface border border-primary-blue rounded px-3 w-full dark:border-primary-blue-hover dark:bg-primary-blue-hover/40 dark:tex-white",
 	{
 		variants: {
 			size: {

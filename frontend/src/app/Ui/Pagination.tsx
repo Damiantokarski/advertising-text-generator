@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Icon } from "./Icon";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 type PaginationProps = {
 	page: number;
@@ -26,6 +27,7 @@ export const Pagination = ({
 	pages.push(page);
 	if (page < totalPages) pages.push(page + 1);
 	const [showPageSize, setShowPageSize] = useState(false);
+	const ref = useRef(null);
 
 	const handlePageSizeClick = () => {
 		setShowPageSize(!showPageSize);
@@ -36,12 +38,14 @@ export const Pagination = ({
 		setShowPageSize(false);
 	};
 
+	useClickOutside(ref, () => setShowPageSize(false));
+
 	return (
 		<div className="absolute top-8 right-8 flex items-center gap-2">
 			<button
 				onClick={prevPage}
 				disabled={page <= 1}
-				className="px-2 py-1  rounded disabled:opacity-50 cursor-pointer text-lg"
+				className="px-2 py-1  rounded disabled:opacity-50 cursor-pointer text-lg dark:text-white"
 			>
 				<Icon type="arrowLeft" />
 			</button>
@@ -51,9 +55,8 @@ export const Pagination = ({
 					<button
 						key={p}
 						onClick={() => goToPage(p)}
-						className={`px-3 text-sm py-1 rounded ${
-							p === page ? "bg-primary-blue-sky text-white" : "bg-gray-100"
-						}`}
+						className={`px-3 text-sm py-1 rounded ${p === page ? "bg-primary-blue-sky text-white dark:bg-primary-blue-hover" : "bg-gray-100"
+							}`}
 						aria-current={p === page ? "page" : undefined}
 					>
 						{p}
@@ -64,24 +67,24 @@ export const Pagination = ({
 			<button
 				onClick={nextPage}
 				disabled={page >= totalPages}
-				className="px-2 py-1  rounded disabled:opacity-50  cursor-pointer text-lg"
+				className="px-2 py-1  rounded disabled:opacity-50 cursor-pointer text-lg dark:text-white"
 			>
 				<Icon type="arrowRight" />
 			</button>
 			<button
-				className="border border-primary-blue-sky px-3 py-1 rounded text-sm flex items-center gap-1 bg-surface text-primary-blue-sky cursor-pointer w-20 justify-center "
+				className="border border-primary-blue-sky px-3 py-1 rounded text-sm flex items-center gap-1 bg-surface text-primary-blue-sky cursor-pointer w-20 justify-center dark:bg-primary-blue-hover/40 dark:text-white dark:border-primary-blue-hover"
 				onClick={handlePageSizeClick}
 			>
 				<span>{pageSize}/str</span>
 				<Icon type={showPageSize ? "arrowDown" : "arrowUp"} />
 			</button>
 			{showPageSize && (
-				<div className=" flex flex-col bg-surface z-10 absolute right-0 top-8   shadow rounded w-20  border border-primary-blue-sky">
+				<div ref={ref} className=" flex flex-col bg-surface z-10 absolute right-0 top-8   shadow rounded w-20  border border-primary-blue-sky dark:bg-primary-blue-hover dark:border-primary-blue-hover ">
 					{[5, 10, 20, 50].map((n) => (
 						<button
 							key={n}
 							onClick={() => handleSetPageSize(n)}
-							className="px-4 py-2 hover:bg-gray-100 text-left text-xs text-primary-text cursor-pointer rounded"
+							className="px-4 py-2 hover:bg-gray-100 text-left text-xs text-primary-text cursor-pointer rounded dark:text-white dark:hover:bg-white/10"
 						>
 							{n}
 						</button>

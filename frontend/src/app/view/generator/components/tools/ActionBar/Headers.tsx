@@ -33,18 +33,18 @@ export const Headers = () => {
 			<IconButton
 				icon="header"
 				text="Headers"
-				className="text-lg"
+				className="text-lg dark:text-white"
 				onClick={showDropDown}
 				tooltipPosition="right"
 				tooltipOffsetClass="mt-3"
 			/>
 
 			{isOpen && (
-				<div className="shadow rounded-sm z-1000 absolute left-0 top-12 bg-surface flex flex-col gap-3 px-4 py-4 text-tiny w-42 ">
+				<div className="shadow rounded-sm z-1000 absolute left-0 top-12 bg-surface flex flex-col gap-3 px-4 py-4 text-tiny w-42 dark:bg-dark-section ">
 					{headers.map((header) => (
 						<button
 							key={header.type}
-							className="flex items-center gap-2 cursor-pointer  border-b border-b-gray-200 pb-1 last:border-b-0"
+							className="flex items-center gap-2 cursor-pointer  border-b border-b-gray-200 pb-1 last:border-b-0 dark:text-gray-200"
 							onClick={() => onSelectHeader(header.size)}
 						>
 							<Icon type={header.type} className="text-lg" />:

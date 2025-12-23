@@ -2,6 +2,7 @@ import { Controller, useForm, type SubmitHandler } from "react-hook-form";
 
 import { Input } from "./Input/Input";
 import { Select } from "./Select/Select";
+import type { ProjectItem } from "../view/dashboard/components/projects/hooks/useProjects";
 
 const STATUS_OPTIONS = ["LOW", "MEDIUM", "HIGH"];
 
@@ -14,9 +15,10 @@ export interface ProjectFormData {
 
 export interface ProjectFormProps {
 	onSubmit: SubmitHandler<ProjectFormData>;
+	project?:ProjectItem;
 }
 
-export const ProjectForm = ({ onSubmit }: ProjectFormProps) => {
+export const ProjectForm = ({ onSubmit, project }: ProjectFormProps) => {
 	const {
 		register,
 		handleSubmit,
@@ -25,10 +27,10 @@ export const ProjectForm = ({ onSubmit }: ProjectFormProps) => {
 		control,
 	} = useForm<ProjectFormData>({
 		defaultValues: {
-			name: "",
-			task: "",
-			title: "",
-			priority: "LOW",
+			name: project?.name ?? "",
+			task: project?.job ?? "",
+			title: project?.title ?? "",
+			priority: project?.status ?? "LOW",
 		},
 		mode: "onBlur",
 	});
@@ -85,7 +87,7 @@ export const ProjectForm = ({ onSubmit }: ProjectFormProps) => {
 			<button
 				type="submit"
 				disabled={isSubmitting}
-				className="max-w-2xs text-secondary-light text-sm bg-primary-blue-sky hover:bg-primary-blue-hover text-surface px-4 py-2 rounded  transition-colors cursor-pointer"
+				className="max-w-2xs text-secondary-light text-sm bg-primary-blue-sky hover:bg-primary-blue-hover text-surface px-4 py-2 rounded  transition-colors cursor-pointer dark:bg-primary-blue-hover dark:hover:bg-primary-blue"
 			>
 				{isSubmitting ? "Saving" : "Save"}
 			</button>

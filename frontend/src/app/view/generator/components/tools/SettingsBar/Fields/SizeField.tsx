@@ -1,7 +1,7 @@
 import type { ChangeEvent } from "react";
 import { FieldWrapper } from "../../../../../../ui/FieldWrapper";
-import { Input } from "../../../../../../ui/Input/Input";
 import { useUpdateText } from "../../../../hooks/useActiveCanvas";
+import { Input } from "../../../../../../ui/Input/Input";
 
 
 export const SizeField = () => {

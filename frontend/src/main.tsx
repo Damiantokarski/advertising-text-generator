@@ -14,7 +14,7 @@ import { PublicRoute } from "./app/auth/PublicRoute.tsx";
 import { LoginPage } from "./app/view/login/LoginPage.tsx";
 import { RegisterPage } from "./app/view/register/RegisterPage.tsx";
 import { Dashboard } from "./app/view/dashboard/Dashboard.tsx";
-import { ThemeProvider } from "./app/Ui/ThemeProvider.tsx";
+import { ThemeProvider } from "./app/components/ThemeProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>

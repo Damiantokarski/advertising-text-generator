@@ -35,6 +35,7 @@ export const ExportField = ({ stageRef }: ExportFieldProps) => {
 		});
 	};
 
+
 	return (
 		<FieldWrapper title="Export" className="flex flex-col gap-3">
 			<Input
@@ -43,7 +44,7 @@ export const ExportField = ({ stageRef }: ExportFieldProps) => {
 				value={name}
 				onChange={(e) => setName(e.target.value)}
 				inputSize="small"
-				disabled={selectedElements.length > 0}
+				disabled={selectedElements.length === 0}
 			/>
 			<div className="flex gap-3">
 				<Select
@@ -51,20 +52,20 @@ export const ExportField = ({ stageRef }: ExportFieldProps) => {
 					defaultValue={exportScale}
 					onChange={(value) => setExportScale(value)}
 					small
-					disabled={selectedElements.length > 0}
+					disabled={selectedElements.length === 0}
 				/>
 				<Select
 					optionsList={exportFormat}
 					defaultValue={format}
 					onChange={(value) => setFormat(value as (typeof exportFormat)[number])}
 					small
-					disabled={selectedElements.length > 0}
+					disabled={selectedElements.length === 0}
 				/>
 			</div>
 			<button
 				onClick={handleExportClick}
-				disabled={!hasSelection || selectedElements.length > 0}
-				className="px-4 py-1.5 text-xs text-white rounded cursor-pointer bg-primary-blue hover:bg-primary-blue-shy disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+				disabled={!hasSelection || selectedElements.length === 0}
+				className="px-4 py-1.5 text-xs text-white rounded cursor-pointer bg-primary-blue hover:bg-primary-blue-shy disabled:opacity-40 disabled:cursor-not-allowed transition-colors dark:bg-primary-blue-hover dark:hover:bg-primary-blue"
 			>
 				Export
 			</button>

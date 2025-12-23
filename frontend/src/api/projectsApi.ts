@@ -10,13 +10,16 @@ export interface CreateProjectPayload {
 }
 
 export const createProjectApi = async (data: CreateProjectPayload) => {
-	const res = await fetchProtected(`http://localhost:4000/api/projects/create`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(data),
-	});
+	const res = await fetchProtected(
+		`http://localhost:4000/api/projects/create`,
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		}
+	);
 
 	if (res.ok) {
 		toast.success("Project created successfully");
@@ -59,13 +62,16 @@ export const updateProjectApi = async (
 	texts: Text[],
 	templates: Template[]
 ) => {
-	const res = await fetchProtected(`http://localhost:4000/api/projects/${id}/update`, {
-		method: "PUT",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ texts, templates }),
-	});
+	const res = await fetchProtected(
+		`http://localhost:4000/api/projects/${id}/update`,
+		{
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ texts, templates }),
+		}
+	);
 
 	if (res.ok) {
 		toast.success("Project saved successfully");
@@ -95,5 +101,44 @@ export const deleteProjectItemsApi = async (
 	} else {
 		toast.error("Failed to delete project items");
 		throw new Error(`Failed to delete Project items: ${res.statusText}`);
+	}
+};
+
+export const editProjectApi = async (
+	id: string,
+	data: { name: string; task: string; title: string; priority: string }
+) => {
+	console.log(data, id);
+	const res = await fetchProtected(
+		`http://localhost:4000/api/projects/${id}/edit`,
+		{
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ data }),
+		}
+	);
+
+	if (res.ok) {
+		toast.success("Project updated successfully");
+	} else {
+		toast.error("Failed to update project");
+		throw new Error(`Failed to update Project: ${res.statusText}`);
+	}
+};
+
+export const deleteProjectApi = async (id: string) => {
+	const res = await fetchProtected(
+		`http://localhost:4000/api/projects/${id}/delete`,
+		{
+			method: "DELETE",
+		}
+	);
+	if (res.ok) {
+		toast.success("Project deleted successfully");
+	} else {
+		toast.error("Failed to delete project");
+		throw new Error(`Failed to delete Project: ${res.statusText}`);
 	}
 };

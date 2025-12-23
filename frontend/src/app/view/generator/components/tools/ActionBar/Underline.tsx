@@ -11,7 +11,7 @@ export const Underline = () => {
 		<IconButton
 			icon="textUnderline"
 			text="Underline"
-			className="text-lg"
+			className="text-lg dark:text-white"
 			onClick={handleUnderline}
 			tooltipPosition="right"
 			tooltipOffsetClass="mt-3"
